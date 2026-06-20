@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carbon Footprint Awareness Platform</title>
+<meta name="description" content="Understand, track, and reduce your personal carbon footprint through everyday actions and personalized insights.">
+<style>
+/* ========================================
+   CSS CUSTOM PROPERTIES & RESET
+   ======================================== */
+:root {
+  --bg-primary: #F7F6F3;
+  --bg-secondary: #EFEDE8;
+  --bg-card: #FFFFFF;
+  --text-primary: #1A1A2E;
+  --text-secondary: #4A4A68;
+  --text-muted: #8B8B9E;
+  --accent-green: #2D6A4F;
+  --accent-green-light: #52B788;
+  --accent-green-pale: #D8F3DC;
+  --accent-green-very-pale: #F0FFF4;
+  --accent-warm: #E07A5F;
+  --accent-warm-light: #F2CC8F;
+  --accent-gold: #DDA15E;
+  --border: #E0DDD7;
+  --border-light: #EDE9E3;
+  --shadow-sm: 0 1px 3px rgba(26,26,46,0.06);
+  --shadow-md: 0 4px 12px rgba(26,26,46,0.08);
+  --shadow-lg: 0 8px 30px rgba(26,26,46,0.12);
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --transition: 0.2s ease;
+  --transition-slow: 0.4s ease;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  html { scroll-behavior: auto; }
+}
+
+/* ========================================
+   NAVIGATION
+   ======================================== */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 0 1rem;
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--accent-green);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-brand svg { flex-shrink: 0; }
+
+.nav-tabs {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.nav-tabs::-webkit-scrollbar { display: none; }
+
+.nav-tab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+}
+
+.nav-tab:hover { color: var(--text-primary); background: var(--bg-secondary); }
+.nav-tab:focus-visible { outline: 2px solid var(--accent-green); outline-offset: 2px; }
+.nav-tab.active { color: var(--accent-green); background: var(--accent-green-pale); font-weight: 600; }
+.nav-tab svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* ========================================
+   MAIN CONTENT
+   ======================================== */
+.main {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2rem;
+  width: 100%;
+}
+
+.section { display: none; animation: fadeIn 0.3s ease; }
+.section.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ========================================
+   CARDS & COMPONENTS
+   ======================================== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition);
+}
+
+.card:hover { box-shadow: var(--shadow-md); }
+.card + .card { margin-top: 1rem; }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.card-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; }
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn:focus-visible { outline: 2px solid var(--accent-green); outline-offset: 2px; }
+
+.btn-primary {
+  background: var(--accent-green);
+  color: #fff;
+}
+.btn-primary:hover { background: #245A43; transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+.btn-secondary {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+.btn-secondary:hover { background: var(--border); }
+
+.btn-outline {
+  background: transparent;
+  color: var(--accent-green);
+  border: 1.5px solid var(--accent-green);
+}
+.btn-outline:hover { background: var(--accent-green-pale); }
+
+.btn-warm {
+  background: var(--accent-warm);
+  color: #fff;
+}
+.btn-warm:hover { background: #C96A52; }
+
+.btn-sm { padding: 0.375rem 0.75rem; font-size: 0.8125rem; }
+.btn-lg { padding: 0.875rem 1.75rem; font-size: 1rem; }
+.btn-icon { padding: 0.5rem; }
+
+.btn-quick {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  color: var(--text-primary);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  text-align: left;
+  font-family: var(--font);
+}
+.btn-quick:hover { border-color: var(--accent-green-light); background: var(--accent-green-very-pale); }
+.btn-quick .quick-label { font-weight: 600; }
+.btn-quick .quick-detail { font-size: 0.75rem; color: var(--text-muted); }
+.btn-quick.selected { border-color: var(--accent-green); background: var(--accent-green-pale); }
+
+/* ========================================
+   FORM ELEMENTS
+   ======================================== */
+.form-group { margin-bottom: 1rem; }
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.375rem;
+  color: var(--text-secondary);
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  transition: border-color var(--transition);
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--accent-green-light);
+  box-shadow: 0 0 0 3px rgba(82,183,136,0.15);
+}
+.form-input::placeholder { color: var(--text-muted); }
+.form-textarea { resize: vertical; min-height: 80px; }
+
+.form-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.form-row > * { flex: 1; min-width: 120px; }
+
+.form-error { font-size: 0.8125rem; color: var(--accent-warm); margin-top: 0.25rem; display: none; }
+.form-error.visible { display: block; }
+
+.form-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+/* ========================================
+   BADGE / TAG
+   ======================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.badge-green { background: var(--accent-green-pale); color: var(--accent-green); }
+.badge-warm { background: #FFE5E0; color: var(--accent-warm); }
+.badge-gold { background: #FFF3E0; color: var(--accent-gold); }
+.badge-muted { background: var(--bg-secondary); color: var(--text-muted); }
+
+/* ========================================
+   PROGRESS BAR
+   ======================================== */
+.progress-track {
+  width: 100%;
+  height: 10px;
+  background: var(--bg-secondary);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent-green);
+  transition: width 0.6s ease;
+}
+.progress-fill.warm { background: var(--accent-warm); }
+.progress-fill.gold { background: var(--accent-gold); }
+
+/* ========================================
+   STAT CARD
+   ======================================== */
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  text-align: center;
+}
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--accent-green);
+  line-height: 1.2;
+}
+.stat-value.warm { color: var(--accent-warm); }
+.stat-label {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+.stat-unit {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* ========================================
+   ONBOARDING WIZARD
+   ======================================== */
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(26,26,46,0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.onboarding-overlay.hidden { display: none; }
+
+.onboarding-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.onboarding-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.onboarding-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.onboarding-header p {
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+}
+
+.step-indicator {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: all var(--transition);
+}
+.step-dot.active { background: var(--accent-green); transform: scale(1.2); }
+.step-dot.done { background: var(--accent-green-light); }
+
+.onboarding-step { display: none; }
+.onboarding-step.active { display: block; }
+
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.5rem;
+}
+
+.option-card {
+  padding: 0.875rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: var(--font);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.option-card:hover { border-color: var(--accent-green-light); background: var(--accent-green-very-pale); }
+.option-card.selected { border-color: var(--accent-green); background: var(--accent-green-pale); }
+.option-card:focus-visible { outline: 2px solid var(--accent-green); outline-offset: 2px; }
+.option-card .option-icon { font-size: 1.5rem; margin-bottom: 0.25rem; }
+.option-card .option-label { display: block; }
+.option-card .option-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.125rem; }
+
+.onboarding-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  gap: 0.75rem;
+}
+
+/* ========================================
+   RESULTS COMPARISON CHART
+   ======================================== */
+.comparison-bar-group { margin-top: 1rem; }
+.comparison-item { margin-bottom: 0.75rem; }
+.comparison-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  margin-bottom: 0.25rem;
+}
+.comparison-label span:first-child { color: var(--text-secondary); }
+.comparison-label span:last-child { font-weight: 700; }
+.comparison-bar {
+  height: 28px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  position: relative;
+}
+.comparison-fill {
+  height: 100%;
+  border-radius: var(--radius-xs);
+  transition: width 1s ease;
+  display: flex;
+  align-items: center;
+  padding-left: 0.5rem;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.comparison-fill.you { background: var(--accent-green); }
+.comparison-fill.global { background: var(--accent-gold); }
+.comparison-fill.india { background: var(--accent-warm-light); }
+.comparison-fill.paris { background: var(--accent-green-light); }
+.comparison-fill.over { background: var(--accent-warm); }
+
+/* ========================================
+   DASHBOARD
+   ======================================== */
+.dashboard-hero {
+  background: linear-gradient(135deg, var(--accent-green) 0%, #1B4332 100%);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  color: #fff;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.dashboard-hero::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 300px;
+  height: 300px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+}
+.dashboard-hero h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+.dashboard-hero .hero-subtitle { opacity: 0.85; font-size: 0.9375rem; }
+.dashboard-hero .hero-total {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 1rem 0 0.25rem;
+  line-height: 1;
+}
+.dashboard-hero .hero-unit { font-size: 1rem; font-weight: 400; opacity: 0.8; }
+.dashboard-hero .hero-comparison { font-size: 0.875rem; opacity: 0.75; margin-top: 0.5rem; }
+
+.quick-log-strip {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scrollbar-width: none;
+}
+.quick-log-strip::-webkit-scrollbar { display: none; }
+
+.tip-card {
+  background: var(--accent-green-very-pale);
+  border: 1px solid rgba(82,183,136,0.2);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  font-size: 0.875rem;
+  color: var(--accent-green);
+  line-height: 1.5;
+}
+.tip-card strong { color: var(--text-primary); }
+
+/* ========================================
+   ACTIVITY LOGGER
+   ======================================== */
+.category-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.category-tabs::-webkit-scrollbar { display: none; }
+
+.category-tab {
+  padding: 0.5rem 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.category-tab:hover { border-color: var(--accent-green-light); }
+.category-tab.active { background: var(--accent-green); color: #fff; border-color: var(--accent-green); }
+
+.activity-list { max-height: 400px; overflow-y: auto; }
+.activity-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-light);
+  gap: 1rem;
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-info { flex: 1; min-width: 0; }
+.activity-label { font-weight: 600; font-size: 0.9375rem; }
+.activity-meta { font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.125rem; }
+.activity-co2 {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--accent-warm);
+  white-space: nowrap;
+}
+.activity-co2.saving { color: var(--accent-green); }
+.activity-actions { display: flex; gap: 0.25rem; }
+
+/* ========================================
+   INSIGHTS
+   ======================================== */
+.chart-container {
+  position: relative;
+  width: 100%;
+  background: var(--bg-card);
+}
+.chart-container canvas { width: 100%; height: auto; display: block; }
+.chart-accessible { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+.insight-highlight {
+  background: var(--accent-warm-light);
+  background: linear-gradient(135deg, #FFF3E0 0%, #FFE5E0 100%);
+  border: 1px solid rgba(224,122,95,0.15);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+.insight-highlight h3 { color: var(--accent-warm); font-size: 1rem; margin-bottom: 0.5rem; }
+.insight-highlight p { color: var(--text-secondary); font-size: 0.9375rem; }
+
+.insight-win {
+  background: linear-gradient(135deg, var(--accent-green-very-pale) 0%, var(--accent-green-pale) 100%);
+  border: 1px solid rgba(82,183,136,0.15);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+.insight-win h3 { color: var(--accent-green); font-size: 1rem; margin-bottom: 0.5rem; }
+.insight-win p { color: var(--text-secondary); font-size: 0.9375rem; }
+
+.equivalents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+.equivalent-item {
+  text-align: center;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+}
+.equivalent-value { font-size: 1.25rem; font-weight: 800; color: var(--accent-green); }
+.equivalent-label { font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.125rem; }
+
+/* ========================================
+   RECOMMENDATIONS
+   ======================================== */
+.rec-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  transition: all var(--transition);
+  position: relative;
+}
+.rec-card:hover { box-shadow: var(--shadow-md); border-color: var(--accent-green-light); }
+.rec-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; }
+.rec-title { font-weight: 700; font-size: 1rem; }
+.rec-badge { flex-shrink: 0; }
+.rec-desc { font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.75rem; line-height: 1.5; }
+.rec-savings {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--accent-green);
+  margin-bottom: 0.75rem;
+}
+.rec-reason {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 0.75rem;
+}
+.rec-footer { display: flex; align-items: center; gap: 0.75rem; }
+.rec-committed { background: var(--accent-green-pale); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); font-size: 0.8125rem; color: var(--accent-green); font-weight: 600; }
+
+/* ========================================
+   GOALS & GAMIFICATION
+   ======================================== */
+.streak-card {
+  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-warm-light) 100%);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  color: var(--text-primary);
+  text-align: center;
+}
+.streak-number { font-size: 3rem; font-weight: 900; line-height: 1; }
+.streak-label { font-size: 0.9375rem; margin-top: 0.25rem; color: var(--text-secondary); }
+
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+.badge-card {
+  text-align: center;
+  padding: 1rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  transition: all var(--transition);
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+.badge-card.unlocked { opacity: 1; filter: none; border-color: var(--accent-gold); background: linear-gradient(135deg, #FFFDF7, #FFF8EE); }
+.badge-card .badge-icon { font-size: 2rem; margin-bottom: 0.375rem; }
+.badge-card .badge-name { font-size: 0.8125rem; font-weight: 700; }
+.badge-card .badge-criteria { font-size: 0.6875rem; color: var(--text-muted); margin-top: 0.125rem; }
+
+/* ========================================
+   EDUCATION
+   ======================================== */
+.accordion-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+.accordion-trigger {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: var(--bg-card);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: left;
+  transition: background var(--transition);
+}
+.accordion-trigger:hover { background: var(--bg-secondary); }
+.accordion-trigger:focus-visible { outline: 2px solid var(--accent-green); outline-offset: -2px; }
+.accordion-trigger svg { transition: transform var(--transition); flex-shrink: 0; }
+.accordion-trigger.open svg { transform: rotate(180deg); }
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.accordion-body.open { max-height: 2000px; }
+.accordion-content { padding: 1rem 1.25rem; color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.7; }
+.accordion-content p + p { margin-top: 0.75rem; }
+
+.myth-card {
+  background: var(--bg-card);
+  border-left: 4px solid var(--accent-warm);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+}
+.myth-card .myth-title { font-weight: 700; color: var(--accent-warm); font-size: 0.9375rem; margin-bottom: 0.25rem; }
+.myth-card .myth-fact { color: var(--text-secondary); font-size: 0.875rem; line-height: 1.6; }
+
+/* ========================================
+   REPORTS
+   ======================================== */
+.report-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.report-period-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.report-summary-card {
+  background: linear-gradient(135deg, var(--accent-green) 0%, #1B4332 100%);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.report-export-area {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin-top: 1rem;
+}
+.report-export-area textarea {
+  width: 100%;
+  min-height: 120px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 0.75rem;
+  font-family: monospace;
+  font-size: 0.8125rem;
+  resize: vertical;
+  background: var(--bg-card);
+}
+
+/* ========================================
+   TOAST NOTIFICATIONS
+   ======================================== */
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.toast {
+  background: var(--text-primary);
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+  pointer-events: auto;
+  max-width: 340px;
+}
+
+.toast.success { background: var(--accent-green); }
+.toast.warning { background: var(--accent-gold); }
+
+@keyframes toastIn { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes toastOut { to { opacity: 0; transform: translateY(-10px) scale(0.95); } }
+
+/* ========================================
+   FOOTER
+   ======================================== */
+.footer {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  margin-top: 2rem;
+}
+.footer a { color: var(--accent-green); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+.footer-alignment {
+  max-width: 800px;
+  margin: 1rem auto 0;
+  text-align: left;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ========================================
+   SELF-TEST PANEL
+   ======================================== */
+.self-test-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 400;
+  background: var(--bg-card);
+  border-top: 2px solid var(--accent-green);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-lg);
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: none;
+}
+
+.self-test-panel.visible { display: block; animation: slideUp 0.3s ease; }
+
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.test-result {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0;
+  font-size: 0.875rem;
+}
+.test-pass { color: var(--accent-green); }
+.test-fail { color: var(--accent-warm); }
+
+/* ========================================
+   MODAL
+   ======================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background: rgba(26,26,46,0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal-overlay.hidden { display: none; }
+
+.modal-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+}
+
+/* ========================================
+   RECURRING HABITS
+   ======================================== */
+.habit-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-light);
+  gap: 0.75rem;
+}
+.habit-item:last-child { border-bottom: none; }
+
+/* Toggle Switch */
+.toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background var(--transition);
+  border: none;
+  padding: 0;
+}
+.toggle.on { background: var(--accent-green); }
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+.toggle.on::after { transform: translateX(20px); }
+
+/* ========================================
+   EMPTY STATE
+   ======================================== */
+.empty-state {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--text-muted);
+}
+.empty-state .empty-icon { font-size: 3rem; margin-bottom: 0.75rem; opacity: 0.5; }
+.empty-state h3 { font-size: 1.1rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0.375rem; }
+.empty-state p { font-size: 0.9375rem; max-width: 360px; margin: 0 auto; }
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .nav-inner { height: auto; flex-direction: column; padding: 0.75rem 0; gap: 0.5rem; }
+  .nav-tabs { width: 100%; justify-content: center; }
+  .main { padding: 1rem 0.75rem 1.5rem; }
+  .dashboard-hero { padding: 1.5rem; }
+  .dashboard-hero h1 { font-size: 1.25rem; }
+  .dashboard-hero .hero-total { font-size: 2rem; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .onboarding-card { padding: 1.5rem; }
+  .card { padding: 1.25rem; }
+  .option-grid { grid-template-columns: repeat(2, 1fr); }
+  .rec-header { flex-direction: column; }
+  .toast-container { left: 1rem; right: 1rem; }
+  .toast { max-width: none; }
+}
+
+@media (max-width: 480px) {
+  .nav-tab span { display: none; }
+  .nav-tab svg { width: 22px; height: 22px; }
+  .option-grid { grid-template-columns: 1fr 1fr; }
+  .stat-value { font-size: 1.5rem; }
+  .badge-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ========================================
+   DEBUG BUTTON
+   ======================================== */
+.debug-btn {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 150;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity var(--transition);
+  font-family: var(--font);
+}
+.debug-btn:hover { opacity: 0.8; }
+</style>
+</head>
+<body>
+
+<!-- ========================================
+     NAVIGATION
+     ======================================== -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand" aria-label="Carbon Footprint Awareness Platform" onclick="event.preventDefault()">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22c1.25-.987 2.27-1.975 3.9-2.2 1.72-.225 3.302.574 4.5 1.7"/><path d="M17 8c.5-2.5 2-4.5 4-6"/><path d="M2 12c1.25-.987 2.27-1.975 3.9-2.2 1.72-.225 3.302.574 4.5 1.7"/><path d="M17 16c.5-2.5 2-4.5 4-6"/><path d="M2 18c1.25-.987 2.27-1.975 3.9-2.2 1.72-.225 3.302.574 4.5 1.7"/><path d="M22 2L11 13"/><path d="M14 11l4 4"/><path d="M9 6l4 4"/></svg>
+      CarbonLens
+    </a>
+    <div class="nav-tabs" role="tablist">
+      <button class="nav-tab active" role="tab" aria-selected="true" data-section="dashboard" onclick="navigateTo('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Dashboard</span>
+      </button>
+      <button class="nav-tab" role="tab" aria-selected="false" data-section="log-activity" onclick="navigateTo('log-activity')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Log</span>
+      </button>
+      <button class="nav-tab" role="tab" aria-selected="false" data-section="insights" onclick="navigateTo('insights')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        <span>Insights</span>
+      </button>
+      <button class="nav-tab" role="tab" aria-selected="false" data-section="goals" onclick="navigateTo('goals')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        <span>Goals</span>
+      </button>
+      <button class="nav-tab" role="tab" aria-selected="false" data-section="recommendations" onclick="navigateTo('recommendations')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        <span>Tips</span>
+      </button>
+      <button class="nav-tab" role="tab" aria-selected="false" data-section="education" onclick="navigateTo('education')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span>Learn</span>
+      </button>
+      <button class="nav-tab" role="tab" aria-selected="false" data-section="reports" onclick="navigateTo('reports')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>Report</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ========================================
+     MAIN CONTENT
+     ======================================== -->
+<main class="main" role="main">
+
+  <!-- DASHBOARD SECTION -->
+  <section id="dashboard" class="section active" role="tabpanel" aria-label="Dashboard">
+    <div id="dashboard-content"></div>
+  </section>
+
+  <!-- LOG ACTIVITY SECTION -->
+  <section id="log-activity" class="section" role="tabpanel" aria-label="Log Activity">
+    <div id="log-content"></div>
+  </section>
+
+  <!-- INSIGHTS SECTION -->
+  <section id="insights" class="section" role="tabpanel" aria-label="Insights">
+    <div id="insights-content"></div>
+  </section>
+
+  <!-- RECOMMENDATIONS SECTION -->
+  <section id="recommendations" class="section" role="tabpanel" aria-label="Recommendations">
+    <div id="recommendations-content"></div>
+  </section>
+
+  <!-- GOALS SECTION -->
+  <section id="goals" class="section" role="tabpanel" aria-label="Goals">
+    <div id="goals-content"></div>
+  </section>
+
+  <!-- EDUCATION SECTION -->
+  <section id="education" class="section" role="tabpanel" aria-label="Education">
+    <div id="education-content"></div>
+  </section>
+
+  <!-- REPORTS SECTION -->
+  <section id="reports" class="section" role="tabpanel" aria-label="Reports">
+    <div id="reports-content"></div>
+  </section>
+
+</main>
+
+<!-- ========================================
+     FOOTER
+     ======================================== -->
+<footer class="footer" role="contentinfo">
+  <p>CarbonLens — Personal Carbon Footprint Awareness Platform</p>
+  <p>All emission factors sourced from IPCC, DEFRA, EPA, and national energy agencies. Calculations are estimates for personal awareness.</p>
+  <button class="btn btn-sm btn-secondary" onclick="toggleAlignment()" aria-expanded="false" aria-controls="alignment-note" style="margin-top:0.75rem">How does this address the problem?</button>
+  <div id="alignment-note" class="footer-alignment" style="display:none" role="region" aria-label="Problem alignment">
+    <strong>Problem Statement Alignment</strong><br>
+    <strong>Understand</strong> — The onboarding questionnaire establishes a personalized baseline, and the Insights dashboard breaks down your emissions by category with visual charts and relatable equivalents.<br><br>
+    <strong>Track</strong> — The Activity Logger lets you log daily transport, energy, food, and consumption habits with minimal friction, including recurring habits. All data persists in localStorage.<br><br>
+    <strong>Reduce</strong> — The Recommendations Engine generates specific, ranked suggestions based on your actual logged data — not generic tips. You can commit to recommendations and track follow-through.<br><br>
+    <strong>Personalized</strong> — Every insight, recommendation, and equivalent is calculated from your own data. Your biggest contributor and best quick win are unique to your habits.<br><br>
+    <strong>Achievable</strong> — Goals & gamification with streaks, badges, and milestones encourage sustained behavior change. Bite-sized education builds genuine understanding without guilt.
+  </div>
+</footer>
+
+<!-- ========================================
+     ONBOARDING OVERLAY
+     ======================================== -->
+<div id="onboarding-overlay" class="onboarding-overlay hidden" role="dialog" aria-modal="true" aria-label="Carbon footprint onboarding">
+  <div class="onboarding-card">
+    <div class="step-indicator" id="step-indicator"></div>
+    <div id="onboarding-steps"></div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+<!-- SELF-TEST PANEL -->
+<div id="self-test-panel" class="self-test-panel" role="dialog" aria-label="Self-test results">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <h3 style="font-weight:700;font-size:1.1rem">Self-Test Results</h3>
+    <button class="btn btn-sm btn-secondary" onclick="toggleSelfTest()" aria-label="Close self-test panel">Close</button>
+  </div>
+  <div id="self-test-results"></div>
+  <button class="btn btn-sm btn-primary" onclick="runSelfTests()" style="margin-top:0.75rem">Run Tests Again</button>
+</div>
+
+<!-- DEBUG BUTTON -->
+<button class="debug-btn" onclick="toggleSelfTest()" aria-label="Open self-test panel (Ctrl+Shift+T)" title="Self-Test (Ctrl+Shift+T)">?</button>
+
+<!-- CUSTOM ACTIVITY MODAL -->
+<div id="custom-activity-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Log custom activity">
+  <div class="modal-card">
+    <h3 style="font-weight:700;margin-bottom:1rem" id="modal-title">Log Custom Activity</h3>
+    <div id="modal-form"></div>
+  </div>
+</div>
+
+<script>
+/* ========================================
+   SECTION 1: CONSTANTS & EMISSION FACTORS
+   ======================================== */
+
+const EF = Object.freeze({
+  car: 0.21, bus: 0.089, train: 0.041, motorcycle: 0.113,
+  flightShort: 0.256, flightLong: 0.195, walk: 0, bicycle: 0,
+  electricityIndia: 0.82, electricityUS: 0.42, electricityUK: 0.23,
+  electricityGlobal: 0.475, naturalGas: 2.0, lpg: 3.0,
+  acPerHour: 1.23, heaterPerHour: 1.64,
+  beefMeal: 6.61, chickenMeal: 1.58, fishMeal: 1.12,
+  porkMeal: 2.34, vegMeal: 0.73, veganMeal: 0.39,
+  clothingItem: 20, shoesPair: 14, smartphone: 70,
+  laptop: 350, onlineDelivery: 1.8, electronicsOther: 150,
+});
+
+const BENCHMARKS = Object.freeze({
+  globalAvg: 4.7, indiaAvg: 1.9, usAvg: 15.5, ukAvg: 5.2, parisTarget: 2.0,
+});
+
+const EQUIVALENTS = Object.freeze({
+  treeAbsorbMonthly: 1.8, phoneChargesPerKg: 100, drivingKmPerKg: 4.76,
+});
+
+const CATEGORIES = ['transport', 'energy', 'food', 'consumption'];
+const CATEGORY_LABELS = { transport: 'Transport', energy: 'Home Energy', food: 'Food & Diet', consumption: 'Consumption' };
+const CATEGORY_COLORS = { transport: '#2D6A4F', energy: '#DDA15E', food: '#E07A5F', consumption: '#52B788' };
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+/* ========================================
+   SECTION 2: STATE MANAGEMENT
+   ======================================== */
+
+const STORAGE_KEY = 'carbonlens_data';
+
+function getDefaultState() {
+  return {
+    version: 1, profile: null, activities: [], recurringHabits: [],
+    recommendationsCommitted: [], goals: null, badges: [],
+    streak: { current: 0, best: 0, lastLogDate: null },
+    educationRead: [],
+    reportPeriod: { month: new Date().getMonth(), year: new Date().getFullYear() },
+    currentSection: 'dashboard', activityLogCategory: 'transport', insightsPeriod: 'monthly',
+  };
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return getDefaultState();
+    return { ...getDefaultState(), ...JSON.parse(raw) };
+  } catch (e) { console.warn('Failed to load state:', e); return getDefaultState(); }
+}
+
+function saveState(state) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch (e) { console.warn('Failed to save state:', e); showToast('Could not save — storage may be full.', 'warning'); }
+}
+
+let APP = loadState();
+let _cachedRecommendations = null;
+let _cacheTimestamp = 0;
+const CACHE_TTL = 3000;
+
+function invalidateCache() { _cachedRecommendations = null; _cacheTimestamp = 0; }
+
+/* ========================================
+   SECTION 3: UTILITY FUNCTIONS
+   ======================================== */
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 9); }
+function formatNum(n, decimals = 0) {
+  if (n === null || n === undefined || isNaN(n)) return '0';
+  return Number(n).toLocaleString('en-IN', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+function formatDate(ts) { return new Date(ts).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); }
+function isSameMonth(d1, d2) { return d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear(); }
+function sanitize(str) { const d = document.createElement('div'); d.textContent = String(str); return d.innerHTML; }
+
+function showToast(message, type = 'success') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast ' + type; t.textContent = message; t.setAttribute('role', 'alert');
+  c.appendChild(t);
+  setTimeout(() => { if (t.parentNode) t.remove(); }, 3100);
+}
+
+/* ========================================
+   SECTION 4: EMISSION CALCULATOR
+   ======================================== */
+
+function calcTransport(action, km) { return parseFloat((Math.max(0, Number(km) || 0) * (EF[action] || 0)).toFixed(3)); }
+
+function calcEnergy(action, quantity) {
+  const q = Math.max(0, Number(quantity) || 0);
+  if (action === 'ac') return parseFloat((q * EF.acPerHour).toFixed(3));
+  if (action === 'heater') return parseFloat((q * EF.heaterPerHour).toFixed(3));
+  if (action === 'electricity') return parseFloat((q * EF.electricityIndia).toFixed(3));
+  if (action === 'natural_gas') return parseFloat((q * EF.naturalGas).toFixed(3));
+  return 0;
+}
+
+function calcFood(action) { return EF[action] || 0; }
+
+function calcConsumption(action, quantity) { return parseFloat((Math.max(1, Number(quantity) || 1) * (EF[action] || EF.onlineDelivery)).toFixed(3)); }
+
+function computeBaseline(answers) {
+  const transport = answers.transport || {}, energy = answers.energy || {};
+  const diet = answers.diet || {}, consumption = answers.consumption || {};
+
+  let transportKg = 0;
+  const commuteKm = (transport.commuteKm || 15) * 2;
+  const mode = transport.mode || 'car';
+  if (mode === 'flight' || mode === 'mixed_flight') {
+    const freq = transport.flyFrequency || 'rarely';
+    if (freq === 'monthly') transportKg = 2000 * EF.flightLong;
+    else if (freq === '2-4_per_year') transportKg = (2000 * EF.flightLong * 3) / 12;
+    else transportKg = commuteKm * 22 * EF.car;
+  } else { transportKg = commuteKm * 22 * (EF[mode] || 0); }
+
+  let energyKg = (energy.electricityBillKwh || 200) * EF.electricityIndia;
+  const acUsage = energy.acUsage || 'sometimes';
+  if (acUsage === 'daily') energyKg += 4 * 30 * EF.acPerHour;
+  else if (acUsage === 'sometimes') energyKg += 2 * 15 * EF.acPerHour;
+  if (energy.hasGas) energyKg += 30 * EF.naturalGas;
+
+  let dietKg = 0;
+  const totalMeals = 3 * 30;
+  const dietType = diet.type || 'regular';
+  const beefPerWeek = diet.beefPerWeek || 3;
+  const baseMealMap = { regular: 'chickenMeal', 'meat-heavy': 'beefMeal', pescatarian: 'fishMeal', vegetarian: 'vegMeal', vegan: 'veganMeal' };
+  const beefMeals = beefPerWeek * 4;
+  dietKg = (beefMeals * EF.beefMeal) + ((totalMeals - beefMeals) * (EF[baseMealMap[dietType]] || EF.chickenMeal));
+
+  let consumptionKg = 0;
+  const clothingMap = { monthly: 4, quarterly: 1.3, '2_year': 0.5, rarely: 0.2 };
+  consumptionKg += (clothingMap[consumption.clothingFreq] || 1) * EF.clothingItem;
+  const electronicsMap = { yearly: 1/12, '2_years': 1/24, rarely: 1/48 };
+  consumptionKg += (electronicsMap[consumption.electronicsFreq] || 1/24) * EF.electronicsOther;
+  const deliveryMap = { daily: 30, '2-3_weekly': 10, weekly: 4, '2-3_monthly': 0.75, rarely: 0.25 };
+  consumptionKg += (deliveryMap[consumption.deliveryFreq] || 4) * EF.onlineDelivery;
+
+  const totalKg = transportKg + energyKg + dietKg + consumptionKg;
+  return {
+    transportKg: parseFloat(transportKg.toFixed(1)), energyKg: parseFloat(energyKg.toFixed(1)),
+    dietKg: parseFloat(dietKg.toFixed(1)), consumptionKg: parseFloat(consumptionKg.toFixed(1)),
+    totalKg: parseFloat(totalKg.toFixed(1)), totalAnnual: parseFloat((totalKg * 12 / 1000).toFixed(2)),
+  };
+}
+
+/* ========================================
+   SECTION 5: DATA AGGREGATION
+   ======================================== */
+
+function aggregateActivities(activities, period = null) {
+  const result = { transport: 0, energy: 0, food: 0, consumption: 0, total: 0, count: 0 };
+  const now = new Date();
+  for (let i = 0; i < activities.length; i++) {
+    const a = activities[i];
+    if (period) {
+      const d = new Date(a.timestamp);
+      if (period === 'thisMonth' && !isSameMonth(d, now)) continue;
+      if (period === 'thisWeek' && d < new Date(now.getTime() - 7 * 86400000)) continue;
+    }
+    const cat = a.category === 'food' ? 'food' : a.category;
+    if (result.hasOwnProperty(cat)) { result[cat] += a.co2eKg; result.total += a.co2eKg; result.count++; }
+  }
+  return result;
+}
+
+function aggregateByWeek(activities, numWeeks = 12) {
+  const now = new Date(), weeks = [];
+  for (let w = numWeeks - 1; w >= 0; w--) {
+    const ws = new Date(now.getTime() - (w + 1) * 7 * 86400000);
+    const we = new Date(now.getTime() - w * 7 * 86400000);
+    let total = 0;
+    for (let i = 0; i < activities.length; i++) {
+      const d = new Date(activities[i].timestamp);
+      if (d >= ws && d < we) total += activities[i].co2eKg;
+    }
+    weeks.push({ label: 'W' + (numWeeks - w), value: parseFloat(total.toFixed(1)) });
+  }
+  return weeks;
+}
+
+function aggregateByMonth(activities, numMonths = 6) {
+  const now = new Date(), months = [];
+  for (let m = numMonths - 1; m >= 0; m--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
+    let total = 0;
+    for (let i = 0; i < activities.length; i++) {
+      const ad = new Date(activities[i].timestamp);
+      if (ad.getMonth() === d.getMonth() && ad.getFullYear() === d.getFullYear()) total += activities[i].co2eKg;
+    }
+    months.push({ label: MONTH_NAMES[d.getMonth()].substr(0, 3), value: parseFloat(total.toFixed(1)) });
+  }
+  return months;
+}
+
+function getBiggestCategory(agg) {
+  let max = 0, cat = 'transport';
+  for (const c of CATEGORIES) { if ((agg[c] || 0) > max) { max = agg[c]; cat = c; } }
+  return { category: cat, kg: max };
+}
+
+/* ========================================
+   SECTION 6: CHART RENDERER (Canvas)
+   ======================================== */
+
+function drawDonutChart(canvasId, data, centerText) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.parentElement.offsetWidth, h = 280;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  ctx.scale(dpr, dpr); ctx.clearRect(0, 0, w, h);
+  const cx = w / 2, cy = h / 2;
+  const outerR = Math.min(w, h) / 2 - 20, innerR = outerR * 0.6;
+  const total = data.reduce((s, d) => s + d.value, 0);
+  if (total === 0) {
+    ctx.beginPath(); ctx.arc(cx, cy, outerR, 0, Math.PI * 2); ctx.arc(cx, cy, innerR, 0, Math.PI * 2, true); ctx.fillStyle = '#EFEDE8'; ctx.fill();
+    ctx.font = '600 14px -apple-system,sans-serif'; ctx.fillStyle = '#8B8B9E'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('No data yet', cx, cy);
+    return;
+  }
+  let startAngle = -Math.PI / 2;
+  data.forEach(item => {
+    const slice = (item.value / total) * Math.PI * 2;
+    ctx.beginPath(); ctx.arc(cx, cy, outerR, startAngle, startAngle + slice); ctx.arc(cx, cy, innerR, startAngle + slice, startAngle, true); ctx.closePath(); ctx.fillStyle = item.color; ctx.fill();
+    startAngle += slice;
+  });
+  ctx.font = '800 1.5rem -apple-system,sans-serif'; ctx.fillStyle = '#1A1A2E'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(centerText, cx, cy - 8);
+  ctx.font = '500 0.75rem -apple-system,sans-serif'; ctx.fillStyle = '#8B8B9E'; ctx.fillText('kg CO2e/month', cx, cy + 14);
+  const legendY = h - 15, lw = data.length * 90, ls = (w - lw) / 2;
+  ctx.font = '500 11px -apple-system,sans-serif';
+  data.forEach((item, i) => { const x = ls + i * 90; ctx.fillStyle = item.color; ctx.fillRect(x, legendY - 6, 10, 10); ctx.fillStyle = '#4A4A68'; ctx.textAlign = 'left'; ctx.fillText(item.label, x + 14, legendY + 3); });
+}
+
+function drawLineChart(canvasId, data, color) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.parentElement.offsetWidth, h = 260;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  ctx.scale(dpr, dpr); ctx.clearRect(0, 0, w, h);
+  const pad = { top: 20, right: 20, bottom: 40, left: 50 };
+  const cw = w - pad.left - pad.right, ch = h - pad.top - pad.bottom;
+  const maxVal = Math.max(...data.map(d => d.value), 1);
+  ctx.font = '400 11px -apple-system,sans-serif'; ctx.fillStyle = '#8B8B9E'; ctx.textAlign = 'right';
+  for (let i = 0; i <= 5; i++) {
+    const y = pad.top + ch - (ch * i / 5);
+    ctx.fillText((maxVal * i / 5).toFixed(0), pad.left - 8, y + 4);
+    ctx.strokeStyle = '#E0DDD7'; ctx.lineWidth = 0.5; ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(w - pad.right, y); ctx.stroke();
+  }
+  ctx.textAlign = 'center';
+  const xs = cw / Math.max(data.length - 1, 1);
+  data.forEach((d, i) => { ctx.fillStyle = '#8B8B9E'; ctx.fillText(d.label, pad.left + i * xs, h - pad.bottom + 20); });
+  // Fill
+  ctx.beginPath();
+  data.forEach((d, i) => { const x = pad.left + i * xs, y = pad.top + ch - (d.value / maxVal * ch); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+  ctx.lineTo(pad.left + (data.length - 1) * xs, pad.top + ch); ctx.lineTo(pad.left, pad.top + ch); ctx.closePath();
+  const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + ch); grad.addColorStop(0, color + '30'); grad.addColorStop(1, color + '05'); ctx.fillStyle = grad; ctx.fill();
+  // Line
+  ctx.beginPath();
+  data.forEach((d, i) => { const x = pad.left + i * xs, y = pad.top + ch - (d.value / maxVal * ch); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+  ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.lineJoin = 'round'; ctx.stroke();
+  // Dots
+  data.forEach((d, i) => {
+    const x = pad.left + i * xs, y = pad.top + ch - (d.value / maxVal * ch);
+    ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+    ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+  });
+}
+
+function drawBarChart(canvasId, data) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.parentElement.offsetWidth, h = 220;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  ctx.scale(dpr, dpr); ctx.clearRect(0, 0, w, h);
+  const pad = { top: 10, right: 20, bottom: 50, left: 100 };
+  const cw = w - pad.left - pad.right, barH = 28, gap = 12;
+  const maxVal = Math.max(...data.map(d => d.value), 0.1);
+  data.forEach((item, i) => {
+    const y = pad.top + i * (barH + gap);
+    ctx.font = '600 12px -apple-system,sans-serif'; ctx.fillStyle = '#4A4A68'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(item.label, 0, y + barH / 2);
+    ctx.fillStyle = '#EFEDE8'; ctx.beginPath(); ctx.roundRect(pad.left, y, cw, barH, 6); ctx.fill();
+    const fillW = Math.max((item.value / maxVal) * cw, item.value > 0 ? 24 : 0);
+    ctx.fillStyle = item.color; ctx.beginPath(); ctx.roundRect(pad.left, y, fillW, barH, 6); ctx.fill();
+    ctx.font = '700 11px -apple-system,sans-serif'; ctx.fillStyle = fillW > 60 ? '#fff' : '#4A4A68';
+    ctx.textAlign = fillW > 60 ? 'right' : 'left';
+    ctx.fillText(item.valueText || item.value.toFixed(1) + ' t', fillW > 60 ? pad.left + fillW - 8 : pad.left + fillW + 8, y + barH / 2);
+  });
+}
+
+/* ========================================
+   SECTION 7: RECOMMENDATION ENGINE
+   ======================================== */
+
+function generateRecommendations() {
+  if (_cachedRecommendations && Date.now() - _cacheTimestamp < CACHE_TTL) return _cachedRecommendations;
+  const recs = [];
+  const agg = aggregateActivities(APP.activities, 'thisMonth');
+  const baseline = APP.profile?.baseline;
+  // Use max of logged data or baseline so recommendations work even with few logged activities
+  const tKg = Math.max(agg.transport, baseline ? baseline.transportKg : 0);
+  const eKg = Math.max(agg.energy, baseline ? baseline.energyKg : 0);
+  const fKg = Math.max(agg.food, baseline ? baseline.dietKg : 0);
+  const cKg = Math.max(agg.consumption, baseline ? baseline.consumptionKg : 0);
+  const total = tKg + eKg + fKg + cKg;
+  const tPct = total > 0 ? Math.round(tKg / total * 100) : 0;
+  const ePct = total > 0 ? Math.round(eKg / total * 100) : 0;
+  const fPct = total > 0 ? Math.round(fKg / total * 100) : 0;
+
+  if (tKg > 20) recs.push({ id: 'bus_3days', category: 'transport', effort: 'easy', title: 'Switch 3 days/week to bus or train', description: 'Replacing car trips with public transit 3 days a week significantly cuts transport emissions.', savingsKg: parseFloat((tKg * 0.4 * (1 - EF.bus / EF.car)).toFixed(1)), reason: `Transport is ${tPct}% of your footprint — reducing car trips has the highest impact.` });
+  if (tKg > 10) recs.push({ id: 'walk_short', category: 'transport', effort: 'easy', title: 'Walk or cycle for trips under 3 km', description: 'Short car trips have high per-km emissions due to cold starts. Walking is zero-emission.', savingsKg: parseFloat((15 * 22 * EF.car * 0.15).toFixed(1)), reason: 'Short car trips add up to significant monthly emissions.' });
+  if (APP.activities.some(a => a.category === 'transport' && (a.action === 'flightShort' || a.action === 'flightLong'))) recs.push({ id: 'reduce_flights', category: 'transport', effort: 'hard', title: 'Replace one short-haul flight with train', description: 'A single short-haul return trip can exceed your monthly ground transport footprint.', savingsKg: parseFloat((2000 * EF.flightShort - 2000 * EF.train).toFixed(1)), reason: 'Your flight activity is a major contributor.' });
+  if (eKg > 30) recs.push({ id: 'ac_reduce_1hr', category: 'energy', effort: 'medium', title: 'Reduce AC usage by 1 hour per day', description: 'One less hour daily adds up to meaningful monthly savings, especially with India\'s carbon-intensive grid.', savingsKg: parseFloat((EF.acPerHour * 30).toFixed(1)), reason: `Energy is ${ePct}% of your footprint. AC is typically the largest load.` });
+  if (eKg > 15) recs.push({ id: 'led_lights', category: 'energy', effort: 'easy', title: 'Switch all bulbs to LED', description: 'LEDs use 75% less energy. A full household switch saves ~150 kWh/year.', savingsKg: parseFloat((12.5 * EF.electricityIndia).toFixed(1)), reason: 'Lighting efficiency is a low-effort, high-compliance change.' });
+  if (eKg > 20) recs.push({ id: 'unplug_standby', category: 'energy', effort: 'easy', title: 'Unplug devices on standby or use smart strips', description: 'Standup power draws 5-10% of household electricity.', savingsKg: parseFloat((eKg * 0.07).toFixed(1)), reason: 'Standby power waste accounts for 5-10% of home energy.' });
+  if (fKg > 40) recs.push({ id: 'less_beef', category: 'food', effort: 'medium', title: 'Replace 2 beef meals/week with chicken or plant-based', description: 'Beef produces 4x more emissions per meal than chicken and 17x more than vegan.', savingsKg: parseFloat((2 * 4 * (EF.beefMeal - EF.chickenMeal)).toFixed(1)), reason: `Food is ${fPct}% of your footprint. Beef is the single highest-impact food.` });
+  if (fKg > 20) recs.push({ id: 'one_vegan_day', category: 'food', effort: 'easy', title: 'Try one fully plant-based day per week', description: 'A vegan day saves ~2-3 kg CO2e compared to a typical meat-inclusive day.', savingsKg: parseFloat(((EF.chickenMeal - EF.veganMeal) * 3).toFixed(1)), reason: 'Plant-based meals have the lowest carbon footprint.' });
+  if (fKg > 15) recs.push({ id: 'reduce_food_waste', category: 'food', effort: 'easy', title: 'Reduce food waste by planning meals', description: '30% of food produced is wasted. Wasted food wastes all its embedded emissions too.', savingsKg: parseFloat((fKg * 0.15).toFixed(1)), reason: 'Food waste represents embedded carbon from production.' });
+  if (cKg > 15) recs.push({ id: 'secondhand_clothes', category: 'consumption', effort: 'medium', title: 'Buy second-hand for 50% of clothing', description: 'Manufacturing is the carbon-intensive part. Second-hand has near-zero additional emissions.', savingsKg: parseFloat((EF.clothingItem * 0.5 * 1.5).toFixed(1)), reason: 'Manufacturing clothing is extremely carbon-intensive.' });
+  if (cKg > 5) recs.push({ id: 'batch_deliveries', category: 'consumption', effort: 'easy', title: 'Batch online orders into weekly deliveries', description: 'Consolidating orders reduces delivery emissions by 60-70%.', savingsKg: parseFloat((EF.onlineDelivery * 10 * 0.6).toFixed(1)), reason: 'Individual delivery trips multiply shopping transport emissions.' });
+  if (cKg > 10) recs.push({ id: 'extend_electronics', category: 'consumption', effort: 'medium', title: 'Extend electronics lifespan by 1-2 years', description: 'Manufacturing dominates electronics emissions. Each extra year avoids embedded emissions.', savingsKg: parseFloat((EF.electronicsOther / 36).toFixed(1)), reason: 'Manufacturing phase dominates — longer use = fewer replacements.' });
+
+  const ep = { easy: 0, medium: 0.1, hard: 0.25 };
+  recs.sort((a, b) => (b.savingsKg * (1 - ep[b.effort])) - (a.savingsKg * (1 - ep[a.effort])));
+  const seen = new Set();
+  _cachedRecommendations = recs.filter(r => { if (seen.has(r.id)) return false; seen.add(r.id); return true; });
+  _cacheTimestamp = Date.now();
+  return _cachedRecommendations;
+}
+
+/* ========================================
+   SECTION 8: GOALS & GAMIFICATION
+   ======================================== */
+
+const BADGE_DEFS = [
+  { id: 'first-step', name: 'First Step', icon: '\u{1F6E1}', criteria: 'Complete onboarding' },
+  { id: 'first-log', name: 'Logger', icon: '\u{270D}', criteria: 'Log first activity' },
+  { id: 'week-one', name: 'Week Warrior', icon: '\u{1F31F}', criteria: '7-day logging streak' },
+  { id: 'month-one', name: 'Monthly Maven', icon: '\u{1F4C5}', criteria: '30-day logging streak' },
+  { id: 'transport-hero', name: 'Route Master', icon: '\u{1F697}', criteria: 'Log 20+ transport activities' },
+  { id: 'green-eater', name: 'Green Plate', icon: '\u{1F96C}', criteria: 'Log 10+ plant-based meals' },
+  { id: 'energy-saver', name: 'Power Saver', icon: '\u{1F50B}', criteria: 'Commit to 3+ energy recs' },
+  { id: 'half-way', name: 'Halfway There', icon: '\u{1F3AF}', criteria: '50% of reduction target' },
+  { id: 'goal-crusher', name: 'Goal Crusher', icon: '\u{1F3C6}', criteria: 'Achieve full target' },
+  { id: 'streak-30', name: 'On Fire', icon: '\u{1F525}', criteria: '30-day best streak' },
+  { id: 'low-carbon', name: 'Low Carbon Life', icon: '\u{1F30D}', criteria: 'Monthly total < 100 kg' },
+  { id: 'educator', name: 'Learner', icon: '\u{1F4DA}', criteria: 'Read all 5 education sections' },
+];
+
+function updateStreak() {
+  const today = new Date().toDateString();
+  const loggedToday = APP.activities.some(a => new Date(a.timestamp).toDateString() === today);
+  if (loggedToday && APP.streak.lastLogDate !== today) {
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    APP.streak.current = APP.streak.lastLogDate === yesterday ? APP.streak.current + 1 : 1;
+    APP.streak.lastLogDate = today;
+    if (APP.streak.current > APP.streak.best) APP.streak.best = APP.streak.current;
+    saveState(APP);
+  } else if (!loggedToday && APP.streak.lastLogDate !== today) {
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    if (APP.streak.lastLogDate !== yesterday && APP.streak.lastLogDate !== null) { APP.streak.current = 0; saveState(APP); }
+  }
+}
+
+function checkBadges() {
+  const newly = [];
+  function unlock(id) { if (!APP.badges.includes(id)) { APP.badges.push(id); newly.push(id); } }
+  if (APP.profile) unlock('first-step');
+  if (APP.activities.length >= 1) unlock('first-log');
+  if (APP.streak.current >= 7) unlock('week-one');
+  if (APP.streak.current >= 30) unlock('month-one');
+  if (APP.streak.best >= 30) unlock('streak-30');
+  if (APP.activities.filter(a => a.category === 'transport').length >= 20) unlock('transport-hero');
+  if (APP.activities.filter(a => a.category === 'food' && (a.action === 'vegMeal' || a.action === 'veganMeal')).length >= 10) unlock('green-eater');
+  if (APP.recommendationsCommitted.filter(c => generateRecommendations().find(r => r.id === c.recId)?.category === 'energy').length >= 3) unlock('energy-saver');
+  if (APP.goals) { const r = calculateReductionPercent(); if (r >= 50) unlock('half-way'); if (r >= APP.goals.targetReductionPercent) unlock('goal-crusher'); }
+  if (aggregateActivities(APP.activities, 'thisMonth').total > 0 && aggregateActivities(APP.activities, 'thisMonth').total < 100) unlock('low-carbon');
+  if (APP.educationRead.length >= 5) unlock('educator');
+  if (newly.length > 0) { saveState(APP); newly.forEach(id => { const b = BADGE_DEFS.find(x => x.id === id); if (b) showToast(`Badge unlocked: ${b.icon} ${b.name}!`, 'success'); }); }
+  return newly;
+}
+
+function calculateReductionPercent() {
+  if (!APP.profile?.baseline || !APP.goals) return 0;
+  const base = APP.profile.baseline.totalKg;
+  if (base <= 0) return 0;
+  return Math.max(0, parseFloat(((base - aggregateActivities(APP.activities, 'thisMonth').total) / base * 100).toFixed(1)));
+}
+
+/* ========================================
+   SECTION 9: EDUCATION CONTENT
+   ======================================== */
+
+const EDUCATION_SECTIONS = [
+  { id: 'understanding', title: 'Understanding Carbon Footprint', content: `<p>A carbon footprint measures total greenhouse gas emissions caused by a person, expressed as CO2 equivalent (CO2e). This standardizes different gases like methane and nitrous oxide into one comparable metric based on their global warming potential.</p><p>Your personal footprint covers three "scopes": Scope 1 (direct emissions from things you burn), Scope 2 (indirect emissions from purchased energy), and Scope 3 (everything else — food, products, services, waste). Scope 3 typically makes up 60-70%.</p><p>The global average is approximately 4.7 tonnes CO2e per person per year, but distribution is highly unequal. The Paris Agreement requires per-person footprints to drop to roughly 2 tonnes per year by 2030 in wealthy nations.</p><p>Understanding your footprint is not about blame — it is about awareness. Once you know where emissions come from, you can make informed choices that genuinely reduce impact.</p>` },
+  { id: 'transport', title: 'Transport & Travel', content: `<p>Transport is typically the largest single category for people who commute by car or fly regularly. A short-haul round trip (2,000 km) produces about 512 kg CO2e — more than many people's entire monthly footprint from all other activities. Aircraft burn fuel at high altitudes where contrails amplify warming.</p><p>For ground transport, emission differences are substantial: car 0.21 kg/km, bus 0.089 kg, train 0.041 kg, walking/biking zero. Even EVs have indirect emissions from grid electricity — less than petrol cars but not zero, especially in coal-heavy grids like India.</p><p>The most impactful changes: reduce flying, switch to public transit, carpool, and combine errands into single trips to avoid cold-start penalties on short car trips.</p>` },
+  { id: 'energy', title: 'Home Energy', content: `<p>Home energy emissions depend heavily on your electricity grid. India averages 0.82 kg CO2e/kWh (coal-heavy), UK 0.23 kg/kWh (renewables+nuclear), US 0.42 kg/kWh (mixed). AC is the largest single load — a 1.5-ton AC running 4 hours daily uses about 4.5 kWh/day, translating to 3.7 kg CO2e/day or 110+ kg/month.</p><p>Reducing AC usage by one hour daily saves approximately 37 kg CO2e/month. Setting thermostats to 24-26 degrees, using fans first, and closing curtains during hot hours reduce cooling needs significantly.</p><p>LED bulbs use 75% less energy than incandescent. Pressure cookers save significant cooking energy. Unplugging standby devices saves 5-10% of household electricity.</p>` },
+  { id: 'food', title: 'Food & Diet', content: `<p>Food production is responsible for roughly 26% of global emissions. Beef: 6.61 kg CO2e per meal. Chicken: 1.58 kg. Vegetarian: 0.73 kg. Vegan: 0.39 kg. This 17:1 ratio between beef and vegan meals makes dietary changes one of the most impactful individual actions.</p><p>Emissions come from land use change, methane from cattle (28x more potent than CO2), feed production, processing, and transport. Food miles account for only ~6% of food emissions — what you eat matters far more than where it comes from.</p><p>Food waste represents ~30% of production. When wasted food decomposes in landfills, it produces methane. Planning meals and using leftovers prevents both waste and embedded emissions.</p>` },
+  { id: 'consumption', title: 'Consumption & Stuff', content: `<p>New clothing: ~20 kg CO2e per item (growing fibers, processing, dyeing, sewing, shipping). Fashion accounts for ~10% of global emissions. Second-hand has near-zero additional emissions.</p><p>Electronics have especially high embedded emissions from semiconductor manufacturing: smartphone ~70 kg CO2e, laptop ~350 kg CO2e. Using devices 1-2 years longer avoids significant emissions from replacements.</p><p>Online delivery averages ~1.8 kg CO2e per order. Batching orders and choosing slower shipping reduces delivery emissions by 50-70%. The circular economy — reduce, reuse, repair, recycle — is the most sustainable pattern.</p>` },
+];
+
+const MYTHS = [
+  { myth: '"Recycling solves the waste problem"', fact: 'Recycling is the last step in "reduce, reuse, recycle." Manufacturing new products still generates emissions regardless of recycling. Reducing consumption and reusing items prevents emissions at source.' },
+  { myth: '"Individual actions don\'t matter"', fact: 'If the top 10% of emitters reduced footprints to the global average, global emissions would drop ~30%. Consumer choices drive corporate decisions and build cultural momentum for systemic change.' },
+  { myth: '"EVs produce zero emissions"', fact: 'EVs eliminate tailpipe emissions but still have indirect grid emissions and manufacturing footprint. In India, they produce ~30-50% less than petrol cars over their lifetime.' },
+  { myth: '"Plant-based diets lack nutrition"', fact: 'Well-planned plant-based diets meet all nutritional needs across all life stages per major health organizations. The environmental benefit: up to 73% reduction in food emissions.' },
+  { myth: '"Carbon offsets cancel out my emissions"', fact: 'Offsets can help but should not replace direct reduction. Questions about additionality and permanence remain. The best approach: reduce first, offset what you cannot eliminate.' },
+];
+
+/* ========================================
+   SECTION 10: ONBOARDING
+   ======================================== */
+
+let onboardingStep = 0;
+let onboardingAnswers = {};
+
+const ONBOARDING_STEPS = [
+  { title: 'Welcome to CarbonLens', subtitle: "Let's understand your footprint in about 2 minutes. No wrong answers — just honest estimates.", render(c) {
+    c.innerHTML = `<div class="form-group" style="text-align:center;margin-top:1rem"><label for="onboard-name" style="display:block">What should we call you? <span style="color:var(--text-muted);font-weight:400">(optional)</span></label><input type="text" id="onboard-name" class="form-input" placeholder="Your name" style="max-width:280px;margin:0.5rem auto 0;display:block" maxlength="40" aria-describedby="name-hint"><p id="name-hint" class="form-hint" style="text-align:center">Used only to personalize your experience.</p></div><div class="form-group" style="margin-top:1.5rem"><label style="display:block">Which country do you live in?</label><div class="option-grid" style="margin-top:0.5rem"><button class="option-card selected" data-value="india" onclick="selectOption(this,'country')"><span class="option-label">India</span></button><button class="option-card" data-value="us" onclick="selectOption(this,'country')"><span class="option-label">United States</span></button><button class="option-card" data-value="uk" onclick="selectOption(this,'country')"><span class="option-label">United Kingdom</span></button><button class="option-card" data-value="other" onclick="selectOption(this,'country')"><span class="option-label">Other</span></button></div></div>`;
+    onboardingAnswers.country = 'india';
+  }},
+  { title: 'Transport', subtitle: 'How do you usually get around?', render(c) {
+    c.innerHTML = `<div class="form-group"><label>Primary commute mode</label><div class="option-grid"><button class="option-card" data-value="car" onclick="selectOption(this,'transport.mode')"><span class="option-icon">\u{1F697}</span><span class="option-label">Car</span></button><button class="option-card" data-value="bus" onclick="selectOption(this,'transport.mode')"><span class="option-icon">\u{1F68C}</span><span class="option-label">Bus</span></button><button class="option-card" data-value="train" onclick="selectOption(this,'transport.mode')"><span class="option-icon">\u{1F689}</span><span class="option-label">Train/Metro</span></button><button class="option-card" data-value="motorcycle" onclick="selectOption(this,'transport.mode')"><span class="option-icon">\u{1F3CD}</span><span class="option-label">Motorcycle</span></button><button class="option-card" data-value="bicycle" onclick="selectOption(this,'transport.mode')"><span class="option-icon">\u{1F6B2}</span><span class="option-label">Bicycle</span></button><button class="option-card" data-value="walk" onclick="selectOption(this,'transport.mode')"><span class="option-icon">\u{1F6B6}</span><span class="option-label">Walk</span></button></div></div><div class="form-group"><label for="commute-km">One-way commute distance (km)</label><input type="number" id="commute-km" class="form-input" value="15" min="0" max="200" oninput="onboardingAnswers.transport.commuteKm=this.value"></div><div class="form-group"><label>How often do you fly?</label><div class="option-grid"><button class="option-card" data-value="never" onclick="selectOption(this,'transport.flyFrequency')"><span class="option-label">Never</span></button><button class="option-card" data-value="rarely" onclick="selectOption(this,'transport.flyFrequency')"><span class="option-label">Rarely</span></button><button class="option-card" data-value="2-4_per_year" onclick="selectOption(this,'transport.flyFrequency')"><span class="option-label">2-4/year</span></button><button class="option-card" data-value="monthly" onclick="selectOption(this,'transport.flyFrequency')"><span class="option-label">Monthly+</span></button></div></div>`;
+  }},
+  { title: 'Home Energy', subtitle: "Estimate your home energy use.", render(c) {
+    c.innerHTML = `<div class="form-group"><label for="elec-kwh">Monthly electricity (kWh)</label><input type="number" id="elec-kwh" class="form-input" value="200" min="0" max="5000" oninput="onboardingAnswers.energy.electricityBillKwh=this.value"><p class="form-hint">Check your bill. India households average 150-300 kWh/month.</p></div><div class="form-group"><label>AC usage frequency?</label><div class="option-grid"><button class="option-card" data-value="rarely" onclick="selectOption(this,'energy.acUsage')"><span class="option-label">Rarely</span></button><button class="option-card" data-value="sometimes" onclick="selectOption(this,'energy.acUsage')"><span class="option-label">Sometimes</span></button><button class="option-card" data-value="daily" onclick="selectOption(this,'energy.acUsage')"><span class="option-label">Daily (multi-hrs)</span></button></div></div><div class="form-group"><label>Gas for cooking/heating?</label><div class="option-grid"><button class="option-card" data-value="yes" onclick="selectOption(this,'energy.hasGas');onboardingAnswers.energy.hasGas=true"><span class="option-label">Yes</span></button><button class="option-card" data-value="no" onclick="selectOption(this,'energy.hasGas');onboardingAnswers.energy.hasGas=false"><span class="option-label">No</span></button></div></div>`;
+  }},
+  { title: 'Food & Diet', subtitle: 'What do you eat on a typical day?', render(c) {
+    c.innerHTML = `<div class="form-group"><label>What best describes your diet?</label><div class="option-grid"><button class="option-card" data-value="meat-heavy" onclick="selectOption(this,'diet.type')"><span class="option-label">Meat-heavy</span></button><button class="option-card" data-value="regular" onclick="selectOption(this,'diet.type')"><span class="option-label">Regular</span></button><button class="option-card" data-value="pescatarian" onclick="selectOption(this,'diet.type')"><span class="option-label">Pescatarian</span></button><button class="option-card" data-value="vegetarian" onclick="selectOption(this,'diet.type')"><span class="option-label">Vegetarian</span></button><button class="option-card" data-value="vegan" onclick="selectOption(this,'diet.type')"><span class="option-label">Vegan</span></button></div></div><div class="form-group"><label for="beef-week">Beef meals per week</label><input type="number" id="beef-week" class="form-input" value="3" min="0" max="21" oninput="onboardingAnswers.diet.beefPerWeek=this.value"><p class="form-hint">Beef: ~6.6 kg CO2e per meal — the highest-impact common food.</p></div>`;
+  }},
+  { title: 'Consumption Habits', subtitle: 'How often do you buy new things?', render(c) {
+    c.innerHTML = `<div class="form-group"><label>How often do you buy new clothing?</label><div class="option-grid"><button class="option-card" data-value="monthly" onclick="selectOption(this,'consumption.clothingFreq')"><span class="option-label">Monthly</span></button><button class="option-card" data-value="quarterly" onclick="selectOption(this,'consumption.clothingFreq')"><span class="option-label">Quarterly</span></button><button class="option-card" data-value="2_year" onclick="selectOption(this,'consumption.clothingFreq')"><span class="option-label">2x/year</span></button><button class="option-card" data-value="rarely" onclick="selectOption(this,'consumption.clothingFreq')"><span class="option-label">Rarely</span></button></div></div><div class="form-group"><label>How often new electronics?</label><div class="option-grid"><button class="option-card" data-value="yearly" onclick="selectOption(this,'consumption.electronicsFreq')"><span class="option-label">Yearly</span></button><button class="option-card" data-value="2_years" onclick="selectOption(this,'consumption.electronicsFreq')"><span class="option-label">Every 2 yrs</span></button><button class="option-card" data-value="rarely" onclick="selectOption(this,'consumption.electronicsFreq')"><span class="option-label">Rarely</span></button></div></div><div class="form-group"><label>Online delivery frequency?</label><div class="option-grid"><button class="option-card" data-value="daily" onclick="selectOption(this,'consumption.deliveryFreq')"><span class="option-label">Daily</span></button><button class="option-card" data-value="2-3_weekly" onclick="selectOption(this,'consumption.deliveryFreq')"><span class="option-label">2-3x/week</span></button><button class="option-card" data-value="weekly" onclick="selectOption(this,'consumption.deliveryFreq')"><span class="option-label">Weekly</span></button><button class="option-card" data-value="2-3_monthly" onclick="selectOption(this,'consumption.deliveryFreq')"><span class="option-label">2-3x/month</span></button><button class="option-card" data-value="rarely" onclick="selectOption(this,'consumption.deliveryFreq')"><span class="option-label">Rarely</span></button></div></div>`;
+  }},
+  { title: 'Your Estimated Footprint', subtitle: "Here's what your daily habits add up to.", render(c) {
+    const b = computeBaseline(onboardingAnswers);
+    const a = b.totalAnnual, max = Math.max(a, BENCHMARKS.usAvg, BENCHMARKS.globalAvg) * 1.1;
+    const comp = a < BENCHMARKS.indiaAvg ? 'below the India average — great job!' : a < BENCHMARKS.globalAvg ? 'below global average. Small changes could bring you closer to the Paris target.' : a < BENCHMARKS.usAvg ? 'around global average. You have room for reduction in your top categories.' : 'above average — but awareness is the first step.';
+    c.innerHTML = `<div style="text-align:center;margin:1rem 0"><div style="font-size:2.5rem;font-weight:900;color:var(--accent-green)">${formatNum(a,1)}</div><div style="font-size:1rem;color:var(--text-muted)">tonnes CO2e per year</div><div style="font-size:0.875rem;color:var(--text-secondary);margin-top:0.5rem">${formatNum(b.totalKg,0)} kg/month</div></div><div class="comparison-bar-group"><div class="comparison-item"><div class="comparison-label"><span>You</span><span>${formatNum(a,1)} t/yr</span></div><div class="comparison-bar"><div class="comparison-fill ${a>BENCHMARKS.globalAvg?'over':'you'}" style="width:0%" data-width="${Math.min(100,a/max*100)}%"></div></div></div><div class="comparison-item"><div class="comparison-label"><span>Global Avg</span><span>${BENCHMARKS.globalAvg} t/yr</span></div><div class="comparison-bar"><div class="comparison-fill global" style="width:0%" data-width="${BENCHMARKS.globalAvg/max*100}%"></div></div></div><div class="comparison-item"><div class="comparison-label"><span>India Avg</span><span>${BENCHMARKS.indiaAvg} t/yr</span></div><div class="comparison-bar"><div class="comparison-fill india" style="width:0%" data-width="${BENCHMARKS.indiaAvg/max*100}%"></div></div></div><div class="comparison-item"><div class="comparison-label"><span>Paris Target</span><span>${BENCHMARKS.parisTarget} t/yr</span></div><div class="comparison-bar"><div class="comparison-fill paris" style="width:0%" data-width="${BENCHMARKS.parisTarget/max*100}%"></div></div></div></div><div style="background:var(--accent-green-very-pale);border-radius:var(--radius);padding:1rem;margin-top:1rem;font-size:0.9375rem;color:var(--text-secondary);line-height:1.6">${comp}</div>`;
+    setTimeout(() => c.querySelectorAll('[data-width]').forEach(el => el.style.width = el.dataset.width), 100);
+  }}
+];
+
+function selectOption(el, path) {
+  el.parentElement.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const v = el.dataset.value, p = path.split('.');
+  if (p.length === 1) onboardingAnswers[p[0]] = v;
+  else { if (!onboardingAnswers[p[0]]) onboardingAnswers[p[0]] = {}; onboardingAnswers[p[0]][p[1]] = v; }
+}
+
+function renderOnboarding() {
+  const overlay = document.getElementById('onboarding-overlay');
+  const stepsC = document.getElementById('onboarding-steps');
+  const ind = document.getElementById('step-indicator');
+  overlay.classList.remove('hidden');
+  ind.textContent = '';
+  ONBOARDING_STEPS.forEach((_, i) => { const d = document.createElement('span'); d.className = 'step-dot' + (i === onboardingStep ? ' active' : i < onboardingStep ? ' done' : ''); ind.appendChild(d); });
+  const step = ONBOARDING_STEPS[onboardingStep];
+  stepsC.innerHTML = `<div class="onboarding-header"><h2>${step.title}</h2><p>${step.subtitle}</p></div><div class="onboarding-step active" id="current-step-content"></div><div class="onboarding-actions">${onboardingStep > 0 ? '<button class="btn btn-secondary" onclick="prevOnboardingStep()">Back</button>' : '<span></span>'}${onboardingStep < ONBOARDING_STEPS.length - 1 ? '<button class="btn btn-primary" onclick="nextOnboardingStep()">Continue</button>' : '<button class="btn btn-primary btn-lg" onclick="completeOnboarding()">Start Tracking</button>'}</div>`;
+  step.render(document.getElementById('current-step-content'));
+}
+
+function nextOnboardingStep() { if (onboardingStep < ONBOARDING_STEPS.length - 1) { onboardingStep++; renderOnboarding(); } }
+function prevOnboardingStep() { if (onboardingStep > 0) { onboardingStep--; renderOnboarding(); } }
+
+function completeOnboarding() {
+  const name = document.getElementById('onboard-name')?.value?.trim() || '';
+  APP.profile = { name, country: onboardingAnswers.country || 'india', onboardingAnswers: { ...onboardingAnswers }, baseline: computeBaseline(onboardingAnswers) };
+  saveState(APP);
+  document.getElementById('onboarding-overlay').classList.add('hidden');
+  checkBadges(); invalidateCache(); renderDashboard();
+  showToast('Welcome to CarbonLens! Your baseline is set.', 'success');
+}
+/* ========================================
+   SECTION 11: UI RENDERING
+   ======================================== */
+
+function navigateTo(section) {
+  APP.currentSection = section; saveState(APP);
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+  const el = document.getElementById(section);
+  const tab = document.querySelector(`.nav-tab[data-section="${section}"]`);
+  if (el) el.classList.add('active');
+  if (tab) { tab.classList.add('active'); tab.setAttribute('aria-selected', 'true'); }
+  const renderers = { dashboard: renderDashboard, 'log-activity': renderLogActivity, insights: renderInsights, recommendations: renderRecommendations, goals: renderGoals, education: renderEducation, reports: renderReports };
+  if (renderers[section]) renderers[section]();
+}
+
+function renderDashboard() {
+  const c = document.getElementById('dashboard-content');
+  if (!APP.profile) { c.innerHTML = '<div class="empty-state"><div class="empty-icon">\u{1F30D}</div><h3>Welcome to CarbonLens</h3><p>Let us set up your carbon footprint baseline. It takes about 2 minutes.</p><button class="btn btn-primary" onclick="renderOnboarding()" style="margin-top:1rem">Start Onboarding</button></div>'; return; }
+  const name = APP.profile.name ? `, ${sanitize(APP.profile.name)}` : '';
+  const b = APP.profile.baseline, ma = aggregateActivities(APP.activities, 'thisMonth');
+  const total = ma.total > 0 ? ma.total : b.totalKg;
+  const annual = parseFloat((total * 12 / 1000).toFixed(2));
+  const qbs = [
+    { action: 'car', cat: 'transport', label: 'Car trip', detail: '15 km', q: 15 },
+    { action: 'bus', cat: 'transport', label: 'Bus ride', detail: '10 km', q: 10 },
+    { action: 'train', cat: 'transport', label: 'Train', detail: '20 km', q: 20 },
+    { action: 'ac', cat: 'energy', label: 'Used AC', detail: '1 hour', q: 1 },
+    { action: 'beefMeal', cat: 'food', label: 'Beef meal', detail: '6.6 kg', q: 1 },
+    { action: 'vegMeal', cat: 'food', label: 'Veg meal', detail: '0.73 kg', q: 1 },
+    { action: 'onlineDelivery', cat: 'consumption', label: 'Online order', detail: '1.8 kg', q: 1 },
+  ];
+  const recent = APP.activities.slice(-5).reverse();
+  c.innerHTML = `
+    <div class="dashboard-hero"><h1>Welcome back${name}</h1><p class="hero-subtitle">Your estimated carbon footprint this month</p><div class="hero-total">${formatNum(total,0)} <span class="hero-unit">kg CO2e</span></div><p class="hero-comparison">${annual} tonnes/year — ${annual<=BENCHMARKS.indiaAvg?'below India average':annual<=BENCHMARKS.globalAvg?'near global average':'above global average'}</p></div>
+    <div class="grid-3" style="margin-bottom:1.5rem"><div class="stat-card"><div class="stat-value">${formatNum(ma.transport||b.transportKg,0)}</div><div class="stat-label">Transport (kg)</div></div><div class="stat-card"><div class="stat-value" style="color:var(--accent-gold)">${formatNum(ma.energy||b.energyKg,0)}</div><div class="stat-label">Energy (kg)</div></div><div class="stat-card"><div class="stat-value warm">${formatNum(ma.food||b.dietKg,0)}</div><div class="stat-label">Food (kg)</div></div></div>
+    <div class="card" style="margin-bottom:1rem"><div class="card-header"><div class="card-title">Quick Log</div><a href="#" class="btn btn-sm btn-outline" onclick="event.preventDefault();navigateTo('log-activity')">Full Logger</a></div><div class="quick-log-strip" role="group" aria-label="Quick log">${qbs.map(b=>`<button class="btn-quick" onclick="quickLogActivity('${b.cat}','${b.action}','${b.label}',${b.q})" aria-label="Log ${b.label}"><span class="quick-label">${b.label}</span><span class="quick-detail">${b.detail}</span></button>`).join('')}</div></div>
+    <div class="card" style="margin-bottom:1rem"><div class="card-header"><div class="card-title">Category Breakdown</div></div><div class="chart-container"><canvas id="dash-donut" role="img" aria-label="Category chart"></canvas><div class="chart-accessible" id="dash-donut-alt"></div></div></div>
+    <div class="card" style="margin-bottom:1rem"><div class="card-header"><div class="card-title">Recent Activities</div></div>${recent.length>0?recent.map(a=>renderActivityItem(a)).join(''):'<div class="empty-state"><p>No activities yet. Use Quick Log or the Log tab.</p></div>'}</div>
+    <div class="tip-card"><strong>Did you know?</strong> ${getRandomTip()}</div>`;
+  const dd = CATEGORIES.map(cat => ({ label: CATEGORY_LABELS[cat], value: cat==='food'?(ma.food||b.dietKg):(ma[cat]||b[cat+'Kg']||0), color: CATEGORY_COLORS[cat] }));
+  drawDonutChart('dash-donut', dd, formatNum(total, 0));
+  const alt = document.getElementById('dash-donut-alt');
+  if (alt) alt.textContent = dd.map(d=>`${d.label}: ${d.value} kg`).join(', ');
+}
+
+function renderActivityItem(a) {
+  return `<div class="activity-item"><div class="activity-info"><div class="activity-label">${sanitize(a.label)}</div><div class="activity-meta">${CATEGORY_LABELS[a.category]||a.category} \u{00B7} ${formatDate(a.timestamp)}</div></div><div class="activity-co2">+${formatNum(a.co2eKg,1)} kg</div><div class="activity-actions"><button class="btn btn-sm btn-secondary btn-icon" onclick="deleteActivity('${a.id}')" aria-label="Delete">\u{2715}</button></div></div>`;
+}
+
+function getRandomTip() {
+  const t = ['Switching from beef to chicken for 2 meals/week saves ~40 kg CO2e/month — like driving 200 fewer km.','A single short-haul return flight produces more CO2e than most people\'s entire monthly ground transport.','AC at 24\u00B0 instead of 18\u00B0 uses ~30% less electricity while keeping you comfortable.','Manufacturing one smartphone produces ~70 kg CO2e — equal to charging it 7,000 times.','Second-hand clothing has near-zero additional carbon footprint.','Walking or cycling under 3 km avoids cold-start emissions from cars.','A plant-based meal produces ~17x less CO2e than a beef meal.','Unplugging standby devices saves 5-10% of household electricity.'];
+  return t[Math.floor(Math.random()*t.length)];
+}
+
+/* LOG ACTIVITY */
+function renderLogActivity() {
+  const c = document.getElementById('log-content'), cat = APP.activityLogCategory||'transport';
+  const qa = {
+    transport: [{action:'car',label:'Drove car',dq:15,unit:'km'},{action:'bus',label:'Took bus',dq:10,unit:'km'},{action:'train',label:'Train/Metro',dq:20,unit:'km'},{action:'motorcycle',label:'Motorcycle',dq:10,unit:'km'},{action:'bicycle',label:'Bicycle',dq:5,unit:'km'},{action:'walk',label:'Walked',dq:3,unit:'km'}],
+    energy: [{action:'ac',label:'Used AC',dq:2,unit:'hours'},{action:'heater',label:'Heater',dq:3,unit:'hours'},{action:'electricity',label:'Electricity',dq:10,unit:'kWh'},{action:'natural_gas',label:'Gas cooking',dq:1,unit:'hours'}],
+    food: [{action:'beefMeal',label:'Beef meal',dq:1,unit:'meal'},{action:'chickenMeal',label:'Chicken',dq:1,unit:'meal'},{action:'fishMeal',label:'Fish',dq:1,unit:'meal'},{action:'porkMeal',label:'Pork',dq:1,unit:'meal'},{action:'vegMeal',label:'Vegetarian',dq:1,unit:'meal'},{action:'veganMeal',label:'Vegan',dq:1,unit:'meal'}],
+    consumption: [{action:'clothingItem',label:'Bought clothing',dq:1,unit:'item'},{action:'shoesPair',label:'Shoes',dq:1,unit:'pair'},{action:'smartphone',label:'New phone',dq:1,unit:'item'},{action:'onlineDelivery',label:'Online order',dq:1,unit:'order'},{action:'electronicsOther',label:'Electronics',dq:1,unit:'item'}],
+  };
+  const habits = APP.recurringHabits.filter(h=>h.category===cat);
+  const recent = APP.activities.filter(a=>a.category===cat).slice(-10).reverse();
+  c.innerHTML = `<div class="card" style="margin-bottom:1rem"><div class="card-header"><div class="card-title">Log Activity</div></div><div class="category-tabs" role="tablist">${CATEGORIES.map(cc=>`<button class="category-tab ${cc===cat?'active':''}" role="tab" onclick="switchLogCategory('${cc}')">${CATEGORY_LABELS[cc]}</button>`).join('')}</div><div class="grid-4" role="group">${(qa[cat]||[]).map(a=>`<button class="btn-quick" onclick="logQuickActivity('${cat}','${a.action}','${a.label}',${a.dq},'${a.unit}')" aria-label="Log ${a.label}"><span class="quick-label">${a.label}</span><span class="quick-detail">Default: ${a.dq} ${a.unit}</span></button>`).join('')}</div><div style="margin-top:1rem"><button class="btn btn-sm btn-secondary" onclick="openCustomLogModal('${cat}')">Custom Entry</button></div></div>${habits.length>0?`<div class="card" style="margin-bottom:1rem"><div class="card-header"><div class="card-title">Recurring Habits</div></div>${habits.map(h=>`<div class="habit-item"><div><div style="font-weight:600">${sanitize(h.label)}</div><div style="font-size:0.8125rem;color:var(--text-muted)">${h.quantity} ${h.unit} \u{00B7} ${h.recurrenceInterval}</div></div><div style="display:flex;align-items:center;gap:0.75rem"><span class="badge badge-green">${formatNum(h.co2eKg,1)} kg</span><button class="toggle ${h.enabled!==false?'on':''}" onclick="toggleHabit('${h.id}')" aria-label="Toggle"></button><button class="btn btn-sm btn-secondary" onclick="deleteHabit('${h.id}')">\u{2715}</button></div></div>`).join('')}</div>`:''}<div class="card"><div class="card-header"><div class="card-title">Recent ${CATEGORY_LABELS[cat]}</div><span class="badge badge-muted">${APP.activities.filter(a=>a.category===cat).length} total</span></div><div class="activity-list">${recent.length>0?recent.map(a=>renderActivityItem(a)).join(''):`<div class="empty-state"><p>No ${CATEGORY_LABELS[cat].toLowerCase()} activities yet.</p></div>`}</div></div>`;
+}
+
+function switchLogCategory(cat) { APP.activityLogCategory = cat; renderLogActivity(); }
+
+function logQuickActivity(category, action, label, quantity, unit) {
+  const co2e = calculateCO2e(category, action, quantity);
+  APP.activities.push({ id: uid(), timestamp: Date.now(), category, action, label, co2eKg: co2e, quantity, unit });
+  updateStreak(); checkBadges(); saveState(APP); invalidateCache();
+  showToast(`Logged: ${label} (+${formatNum(co2e,1)} kg CO2e)`, 'success');
+  if (APP.currentSection === 'dashboard') renderDashboard();
+  if (APP.currentSection === 'log-activity') renderLogActivity();
+}
+
+function quickLogActivity(cat, action, label, q) {
+  const um = {car:'km',bus:'km',train:'km',motorcycle:'km',bicycle:'km',walk:'km',ac:'hours',heater:'hours',beefMeal:'meal',vegMeal:'meal',onlineDelivery:'order'};
+  logQuickActivity(cat, action, label, q, um[action]||'unit');
+}
+
+function calculateCO2e(category, action, quantity) {
+  if (category==='transport') return calcTransport(action,quantity);
+  if (category==='energy') return calcEnergy(action,quantity);
+  if (category==='food') return calcFood(action)*Math.max(1,quantity);
+  if (category==='consumption') return calcConsumption(action,quantity);
+  return 0;
+}
+
+function deleteActivity(id) {
+  APP.activities = APP.activities.filter(a=>a.id!==id); saveState(APP); invalidateCache();
+  showToast('Activity deleted.', 'success');
+  if (APP.currentSection==='dashboard') renderDashboard();
+  if (APP.currentSection==='log-activity') renderLogActivity();
+}
+
+function openCustomLogModal(category) {
+  const m = document.getElementById('custom-activity-modal');
+  document.getElementById('modal-title').textContent = `Custom ${CATEGORY_LABELS[category]}`;
+  document.getElementById('modal-form').innerHTML = `
+    <div class="form-group"><label for="cl">Description</label><input type="text" id="cl" class="form-input" placeholder="e.g., Drove to office" maxlength="100"><div class="form-error" id="cl-err">Please enter a description.</div></div>
+    <div class="form-row"><div class="form-group"><label for="cq">Quantity</label><input type="number" id="cq" class="form-input" min="0" step="any" value="1"><div class="form-error" id="cq-err">Enter a valid number.</div></div><div class="form-group"><label for="cu">Unit</label><select id="cu" class="form-select">${category==='transport'?'<option>km</option>':category==='energy'?'<option>hours</option><option>kWh</option>':category==='food'?'<option>meals</option>':'<option>items</option><option>orders</option>'}</select></div></div>
+    <div class="form-group"><label for="cco2">CO2e (kg) <span style="color:var(--text-muted);font-weight:400">optional</span></label><input type="number" id="cco2" class="form-input" placeholder="Auto-calculated" min="0" step="any"></div>
+    <div class="form-group"><label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer"><input type="checkbox" id="crec">Set as recurring habit</label></div>
+    <div id="rec-opts" style="display:none"><div class="form-group"><label for="crecv">Repeat every</label><select id="crecv" class="form-select"><option value="daily">Day</option><option value="weekly">Week</option><option value="monthly">Month</option></select></div></div>
+    <div style="display:flex;gap:0.75rem;justify-content:flex-end;margin-top:1rem"><button class="btn btn-secondary" onclick="closeCustomModal()">Cancel</button><button class="btn btn-primary" onclick="submitCustom('${category}')">Log Activity</button></div>`;
+  m.classList.remove('hidden');
+  setTimeout(()=>{ const chk=document.getElementById('crec'); if(chk) chk.onchange=()=>{document.getElementById('rec-opts').style.display=chk.checked?'block':'none'}; },0);
+}
+
+function closeCustomModal() { document.getElementById('custom-activity-modal').classList.add('hidden'); }
+
+function submitCustom(category) {
+  const label=document.getElementById('cl').value.trim(), qty=parseFloat(document.getElementById('cq').value), unit=document.getElementById('cu').value;
+  const customCO2=parseFloat(document.getElementById('cco2').value)||null;
+  const isRec=document.getElementById('crec')?.checked||false, recv=document.getElementById('crecv')?.value||'daily';
+  let ok=true;
+  if(!label){document.getElementById('cl-err').classList.add('visible');ok=false;}else{document.getElementById('cl-err').classList.remove('visible');}
+  if(isNaN(qty)||qty<0){document.getElementById('cq-err').classList.add('visible');ok=false;}else{document.getElementById('cq-err').classList.remove('visible');}
+  if(!ok)return;
+  const co2e=customCO2!==null?customCO2:calculateCO2e(category,'custom',qty);
+  APP.activities.push({id:uid(),timestamp:Date.now(),category,action:'custom',label,co2eKg:co2e,quantity:qty,unit});
+  if(isRec) APP.recurringHabits.push({id:uid(),category,action:'custom',label,co2eKg:co2e,quantity:qty,unit,recurrenceInterval:recv,enabled:true});
+  updateStreak();checkBadges();saveState(APP);invalidateCache();closeCustomModal();
+  showToast(`Logged: ${label} (+${formatNum(co2e,1)} kg)${isRec?' — recurring!':''}`,'success');
+  if(APP.currentSection==='log-activity')renderLogActivity();
+  if(APP.currentSection==='dashboard')renderDashboard();
+}
+
+function toggleHabit(id) { const h=APP.recurringHabits.find(x=>x.id===id); if(h){h.enabled=!h.enabled;saveState(APP);renderLogActivity();} }
+function deleteHabit(id) { APP.recurringHabits=APP.recurringHabits.filter(x=>x.id!==id); saveState(APP); renderLogActivity(); showToast('Habit removed.','success'); }
+
+/* INSIGHTS */
+function renderInsights() {
+  const c=document.getElementById('insights-content');
+  if(!APP.profile){c.innerHTML='<div class="empty-state"><h3>Complete onboarding first</h3></div>';return;}
+  const b=APP.profile.baseline, ma=aggregateActivities(APP.activities,'thisMonth'), has=APP.activities.length>0;
+  const t=ma.transport||b.transportKg, e=ma.energy||b.energyKg, f=ma.food||b.dietKg, cn=ma.consumption||b.consumptionKg;
+  const total=has?ma.total:b.totalKg;
+  const big=getBiggestCategory({transport:t,energy:e,food:f,consumption:cn});
+  const recs=generateRecommendations(), qw=recs[0]||null;
+  const trees=Math.ceil(total/EQUIVALENTS.treeAbsorbMonthly), km=Math.round(total*EQUIVALENTS.drivingKmPerKg), ch=Math.round(total*EQUIVALENTS.phoneChargesPerKg);
+  const bigReasons = {transport:'Commute and travel choices have the largest impact. Consider public transit or active transport.',energy:'Home energy — especially cooling — is your largest category. Small efficiency improvements add up.',food:'Food choices, especially meat, contribute the most. Even partial plant-based shifts create meaningful reductions.',consumption:'Purchasing habits have the largest impact. Buying less, second-hand, and extending lifespans are most effective.'};
+  c.innerHTML = `<h2 style="font-size:1.25rem;font-weight:800;margin-bottom:1rem">Your Insights</h2>
+    <div class="grid-2" style="margin-bottom:1rem"><div class="card"><div class="card-header"><div class="card-title">Category Breakdown</div></div><div class="chart-container"><canvas id="ins-donut" role="img"></canvas><div class="chart-accessible" id="ins-donut-alt"></div></div></div><div><div class="insight-highlight" style="margin-bottom:0.75rem"><h3>\u{26A0} Biggest Contributor</h3><p><strong>${CATEGORY_LABELS[big.category]}</strong> — ${total>0?Math.round(big.kg/total*100):0}% (${formatNum(big.kg,0)} kg). ${bigReasons[big.category]}</p></div>${qw?`<div class="insight-win"><h3>\u{2B50} Best Quick Win</h3><p><strong>${qw.title}</strong> — saves ~<strong>${formatNum(qw.savingsKg,1)} kg/month</strong>. Effort: ${qw.effort}.</p><a href="#" class="btn btn-sm btn-outline" onclick="event.preventDefault();navigateTo('recommendations')" style="margin-top:0.5rem">All Recommendations</a></div>`:''}</div></div>
+    <div class="card" style="margin-bottom:1rem"><div class="card-header"><div class="card-title">Trend</div><div style="display:flex;gap:0.5rem"><button class="btn btn-sm ${APP.insightsPeriod==='weekly'?'btn-primary':'btn-secondary'}" onclick="APP.insightsPeriod='weekly';renderInsights()">Weekly</button><button class="btn btn-sm ${APP.insightsPeriod==='monthly'?'btn-primary':'btn-secondary'}" onclick="APP.insightsPeriod='monthly';renderInsights()">Monthly</button></div></div><div class="chart-container"><canvas id="ins-line" role="img"></canvas><div class="chart-accessible" id="ins-line-alt"></div></div></div>
+    <div class="card" style="margin-bottom:1rem"><div class="card-header"><div class="card-title">How You Compare</div></div><div class="chart-container"><canvas id="ins-bar" role="img"></canvas><div class="chart-accessible" id="ins-bar-alt"></div></div></div>
+    <div class="card"><div class="card-header"><div class="card-title">What Does This Mean?</div></div><div class="equivalents-grid"><div class="equivalent-item"><div class="equivalent-value">${formatNum(trees,0)}</div><div class="equivalent-label">Trees/month to absorb</div></div><div class="equivalent-item"><div class="equivalent-value">${formatNum(km,0)}</div><div class="equivalent-label">Equivalent km driven</div></div><div class="equivalent-item"><div class="equivalent-value">${formatNum(ch,0)}</div><div class="equivalent-label">Phone charges equiv.</div></div></div></div>`;
+  const dd=[{label:'Transport',value:t,color:CATEGORY_COLORS.transport},{label:'Energy',value:e,color:CATEGORY_COLORS.energy},{label:'Food',value:f,color:CATEGORY_COLORS.food},{label:'Consumption',value:cn,color:CATEGORY_COLORS.consumption}];
+  drawDonutChart('ins-donut',dd,formatNum(total,0));
+  document.getElementById('ins-donut-alt').textContent=dd.map(d=>`${d.label}: ${formatNum(d.value,0)} kg`).join(', ');
+  const trend=APP.insightsPeriod==='weekly'?aggregateByWeek(APP.activities,12):aggregateByMonth(APP.activities,6);
+  drawLineChart('ins-line',trend,'#2D6A4F');
+  document.getElementById('ins-line-alt').textContent=trend.map(d=>`${d.label}: ${d.value} kg`).join('. ');
+  const ann=parseFloat((total*12/1000).toFixed(2));
+  drawBarChart('ins-bar',[{label:'You',value:ann,color:'#2D6A4F',valueText:ann.toFixed(1)+' t/yr'},{label:'India Avg',value:BENCHMARKS.indiaAvg,color:'#F2CC8F',valueText:BENCHMARKS.indiaAvg+' t/yr'},{label:'Global Avg',value:BENCHMARKS.globalAvg,color:'#DDA15E',valueText:BENCHMARKS.globalAvg+' t/yr'},{label:'Paris Target',value:BENCHMARKS.parisTarget,color:'#52B788',valueText:BENCHMARKS.parisTarget+' t/yr'}]);
+  document.getElementById('ins-bar-alt').textContent=`You: ${ann}t. India: ${BENCHMARKS.indiaAvg}t. Global: ${BENCHMARKS.globalAvg}t. Paris: ${BENCHMARKS.parisTarget}t.`;
+}
+
+/* RECOMMENDATIONS */
+function renderRecommendations() {
+  const c=document.getElementById('recommendations-content'), recs=generateRecommendations();
+  if(!APP.profile){c.innerHTML='<div class="empty-state"><h3>Complete onboarding first</h3></div>';return;}
+  const agg=aggregateActivities(APP.activities,'thisMonth'), b=APP.profile.baseline, total=agg.total>0?agg.total:b.totalKg;
+  const big=getBiggestCategory(agg);
+  c.innerHTML = `<div style="margin-bottom:1rem"><h2 style="font-size:1.25rem;font-weight:800">Personalized Recommendations</h2><p style="color:var(--text-secondary);font-size:0.9375rem">Generated from your actual data — not generic tips.</p></div><div class="tip-card" style="margin-bottom:1rem"><strong>Your profile:</strong> ${formatNum(total,0)} kg/month. ${big.category==='transport'?'Transport dominates — focus there.':big.category==='food'?'Food is your biggest lever — dietary changes are effective.':big.category==='energy'?'Energy efficiency improvements pay off fast.':'Consumption habits lead — buying less matters most.'}</div>${recs.length>0?recs.map(r=>{const ic=APP.recommendationsCommitted.some(x=>x.recId===r.id);return`<div class="rec-card" style="margin-bottom:0.75rem"><div class="rec-header"><div><div class="rec-title">${sanitize(r.title)}</div><span class="badge badge-${r.effort==='easy'?'green':r.effort==='medium'?'gold':'warm'}" style="margin-top:0.375rem">${r.effort}</span></div><span class="badge badge-green">${CATEGORY_LABELS[r.category]}</span></div><p class="rec-desc">${sanitize(r.description)}</p><div class="rec-savings">\u{2B07} ~${formatNum(r.savingsKg,1)} kg CO2e/month</div><p class="rec-reason">Your data: ${sanitize(r.reason)}</p><div class="rec-footer">${ic?'<span class="rec-committed">\u{2705} Committed!</span>':`<button class="btn btn-sm btn-primary" onclick="commitRecommendation('${r.id}')">Commit</button>`}</div></div>`;}).join(''):'<div class="empty-state"><p>No recommendations yet. Log activities to get personalized suggestions.</p></div>'}`;
+}
+
+function commitRecommendation(id) {
+  if(!APP.recommendationsCommitted.some(c=>c.recId===id)){APP.recommendationsCommitted.push({recId:id,committedDate:Date.now(),followUps:[]});saveState(APP);checkBadges();showToast('Recommendation committed!','success');renderRecommendations();}
+}
+
+/* GOALS */
+function renderGoals() {
+  const c=document.getElementById('goals-content');
+  if(!APP.profile){c.innerHTML='<div class="empty-state"><h3>Complete onboarding first</h3></div>';return;}
+  const s=APP.streak, r=APP.goals?calculateReductionPercent():0;
+  c.innerHTML = `<h2 style="font-size:1.25rem;font-weight:800;margin-bottom:1rem">Goals & Progress</h2>
+    <div class="grid-2" style="margin-bottom:1rem"><div class="streak-card"><div class="streak-number">${s.current}</div><div class="streak-label">Day Streak</div><div style="font-size:0.8125rem;color:var(--text-muted);margin-top:0.5rem">Best: ${s.best}</div></div><div class="stat-card"><div class="stat-value">${APP.activities.length}</div><div class="stat-label">Activities Logged</div></div></div>
+    <div class="card" style="margin-bottom:1rem"><div class="card-header"><div class="card-title">Reduction Goal</div></div>${APP.goals?`<div style="margin-bottom:1rem"><div style="display:flex;justify-content:space-between;font-size:0.875rem;margin-bottom:0.5rem"><span>Current: ${formatNum(r,1)}%</span><span>Target: ${APP.goals.targetReductionPercent}%</span></div><div class="progress-track"><div class="progress-fill" style="width:${Math.min(100,r/APP.goals.targetReductionPercent*100)}%"></div></div><p style="font-size:0.8125rem;color:var(--text-muted);margin-top:0.5rem">${r>=APP.goals.targetReductionPercent?'Target achieved!':`${formatNum(APP.goals.targetReductionPercent-r,1)}% to go. Keep it up!`}</p></div><div style="display:flex;gap:0.5rem"><button class="btn btn-sm btn-secondary" onclick="editGoal()">Adjust</button><button class="btn btn-sm btn-secondary" onclick="APP.goals=null;saveState(APP);renderGoals()">Remove</button></div>`:`<div class="form-group"><label>Reduce footprint by</label><div class="form-row"><div><input type="number" id="gp" class="form-input" min="1" max="80" value="15"><span style="font-size:0.875rem;color:var(--text-muted)">%</span></div><div><select id="gm" class="form-select"><option value="3">3 months</option><option value="6" selected>6 months</option><option value="12">12 months</option></select></div></div></div><button class="btn btn-primary" onclick="setGoal()">Set Goal</button>`}</div>
+    <div class="card"><div class="card-header"><div class="card-title">Badges</div><span class="badge badge-muted">${APP.badges.length}/${BADGE_DEFS.length}</span></div><div class="badge-grid">${BADGE_DEFS.map(b=>`<div class="badge-card ${APP.badges.includes(b.id)?'unlocked':''}" title="${sanitize(b.criteria)}"><div class="badge-icon">${b.icon}</div><div class="badge-name">${b.name}</div><div class="badge-criteria">${APP.badges.includes(b.id)?'Unlocked!':b.criteria}</div></div>`).join('')}</div></div>`;
+}
+
+function setGoal() {
+  const p=parseInt(document.getElementById('gp').value)||15, m=parseInt(document.getElementById('gm').value)||6;
+  if(p<1||p>80){showToast('Enter 1-80%.','warning');return;}
+  APP.goals={targetReductionPercent:p,targetMonths:m,startDate:Date.now(),currentReductionPercent:0};
+  saveState(APP);checkBadges();renderGoals();showToast(`Goal: ${p}% reduction in ${m} months.`,'success');
+}
+
+function editGoal() {
+  if(!APP.goals)return;
+  const n=prompt('New reduction target (1-80):',APP.goals.targetReductionPercent);
+  if(n!==null){const p=parseInt(n);if(p>=1&&p<=80){APP.goals.targetReductionPercent=p;saveState(APP);renderGoals();showToast('Goal updated!','success');}else showToast('Enter 1-80%.','warning');}
+}
+
+/* EDUCATION */
+function renderEducation() {
+  const c=document.getElementById('education-content');
+  c.innerHTML = `<h2 style="font-size:1.25rem;font-weight:800;margin-bottom:1rem">Learn & Understand</h2><p style="color:var(--text-secondary);margin-bottom:1.25rem">Understanding the "why" behind emissions helps you make better choices.</p>
+    <div style="margin-bottom:1.5rem">${EDUCATION_SECTIONS.map(s=>`<div class="accordion-item" id="edu-${s.id}"><button class="accordion-trigger ${APP.educationRead.includes(s.id)?'open':''}" onclick="toggleAccordion('edu-${s.id}')" aria-expanded="${APP.educationRead.includes(s.id)}" aria-controls="edu-${s.id}-body"><span>${s.title}</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="accordion-body ${APP.educationRead.includes(s.id)?'open':''}" id="edu-${s.id}-body"><div class="accordion-content">${s.content}</div></div></div>`).join('')}</div>
+    <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.75rem">Myth Busting</h3><p style="color:var(--text-secondary);font-size:0.9375rem;margin-bottom:1rem">Common misconceptions — and what evidence actually says.</p>${MYTHS.map(m=>`<div class="myth-card"><div class="myth-title">${sanitize(m.myth)}</div><div class="myth-fact">${sanitize(m.fact)}</div></div>`).join('')}`;
+}
+
+function toggleAccordion(id) {
+  const item=document.getElementById(id), trigger=item.querySelector('.accordion-trigger'), body=item.querySelector('.accordion-body');
+  const open=body.classList.contains('open');
+  body.classList.toggle('open');trigger.classList.toggle('open');trigger.setAttribute('aria-expanded',!open);
+  const sid=id.replace('edu-','');
+  if(!open&&!APP.educationRead.includes(sid)){APP.educationRead.push(sid);saveState(APP);checkBadges();}
+}
+
+/* REPORTS */
+function renderReports() {
+  const c=document.getElementById('reports-content');
+  if(!APP.profile){c.innerHTML='<div class="empty-state"><h3>Complete onboarding first</h3></div>';return;}
+  const rp=APP.reportPeriod, mn=MONTH_NAMES[rp.month], now=new Date();
+  const pa=APP.activities.filter(a=>{const d=new Date(a.timestamp);return d.getMonth()===rp.month&&d.getFullYear()===rp.year;});
+  const pag=aggregateActivities(pa), b=APP.profile.baseline, tw=pag.total>0?pag.total:b.totalKg;
+  const pm=rp.month===0?11:rp.month-1, py=rp.month===0?rp.year-1:rp.year;
+  const prev=APP.activities.filter(a=>{const d=new Date(a.timestamp);return d.getMonth()===pm&&d.getFullYear()===py;});
+  const pvg=aggregateActivities(prev);
+  const chgBase=b.totalKg>0?((tw-b.totalKg)/b.totalKg*100):0;
+  const chgPrev=pvg.total>0?((tw-pvg.total)/pvg.total*100):0;
+  const st=generateShareText(rp,tw,chgBase,pag,b);
+  c.innerHTML = `<div class="report-header"><h2 style="font-size:1.25rem;font-weight:800">Carbon Report</h2><div class="report-period-nav"><button class="btn btn-sm btn-secondary" onclick="shiftReportPeriod(-1)">&larr;</button><span style="font-weight:700;min-width:140px;text-align:center">${mn} ${rp.year}</span><button class="btn btn-sm btn-secondary" onclick="shiftReportPeriod(1)" ${rp.month>=now.getMonth()&&rp.year>=now.getFullYear()?'disabled style="opacity:0.4"':''}>&rarr;</button></div></div>
+    <div class="report-summary-card"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem"><div><div style="font-size:2rem;font-weight:900">${formatNum(tw,0)} kg</div><div style="opacity:0.8">CO2e — ${mn} ${rp.year}</div></div><div style="text-align:right"><div style="font-size:1.25rem;font-weight:700">${chgBase>0?'+':''}${formatNum(chgBase,1)}%</div><div style="opacity:0.7;font-size:0.875rem">vs baseline</div></div></div>${pvg.total>0?`<div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.2);font-size:0.875rem;opacity:0.85">vs ${MONTH_NAMES[pm]} ${py}: ${chgPrev>0?'+':''}${formatNum(chgPrev,1)}%</div>`:''}</div>
+    <div class="grid-4" style="margin-bottom:1rem"><div class="stat-card"><div class="stat-value">${formatNum(pag.transport||b.transportKg,0)}</div><div class="stat-label">Transport</div></div><div class="stat-card"><div class="stat-value" style="color:var(--accent-gold)">${formatNum(pag.energy||b.energyKg,0)}</div><div class="stat-label">Energy</div></div><div class="stat-card"><div class="stat-value warm">${formatNum(pag.food||b.dietKg,0)}</div><div class="stat-label">Food</div></div><div class="stat-card"><div class="stat-value" style="color:var(--accent-green-light)">${formatNum(pag.consumption||b.consumptionKg,0)}</div><div class="stat-label">Consumption</div></div></div>
+    <div class="card" style="margin-bottom:1rem"><div class="card-header"><div class="card-title">Monthly Trend</div></div><div class="chart-container"><canvas id="rpt-line" role="img"></canvas></div></div>
+    <div class="card" style="margin-bottom:1rem"><div class="card-header"><div class="card-title">Summary</div></div><div style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.7"><p><strong>Activities:</strong> ${pa.length} | <strong>Committed recs:</strong> ${APP.recommendationsCommitted.length} | <strong>Badges:</strong> ${APP.badges.length} | <strong>Streak:</strong> ${APP.streak.current} days</p>${chgBase<0?`<p style="color:var(--accent-green);font-weight:600;margin-top:0.5rem">${formatNum(Math.abs(chgBase),1)}% below baseline — great progress!</p>`:chgBase>0?`<p style="color:var(--accent-warm);margin-top:0.5rem">${formatNum(chgBase,1)}% above baseline. Check Tips for ways to reduce.</p>`:'<p>At baseline level. Small daily changes shift this over time.</p>'}</div></div>
+    <div class="card"><div class="card-header"><div class="card-title">Share</div></div><div class="report-export-area"><textarea id="rpt-text" readonly aria-label="Shareable text">${st}</textarea><div style="margin-top:0.5rem"><button class="btn btn-sm btn-primary" onclick="copyReport()">Copy to Clipboard</button></div></div></div>`;
+  drawLineChart('rpt-line',aggregateByMonth(APP.activities,6),'#2D6A4F');
+}
+
+function shiftReportPeriod(d) {
+  let m=APP.reportPeriod.month+d, y=APP.reportPeriod.year;
+  if(m<0){m=11;y--;} if(m>11){m=0;y++;}
+  const now=new Date(); if(y>now.getFullYear()||(y===now.getFullYear()&&m>now.getMonth()))return;
+  APP.reportPeriod={month:m,year:y}; saveState(APP); renderReports();
+}
+
+function generateShareText(rp,total,chg,agg,b) {
+  return `Carbon Footprint Report — ${MONTH_NAMES[rp.month]} ${rp.year}\nTotal: ${formatNum(total,0)} kg CO2e (${parseFloat((total*12/1000).toFixed(2))} t/yr)\nvs baseline: ${chg>0?'+':''}${formatNum(chg,1)}%\nTransport: ${formatNum(agg.transport||b.transportKg,0)}kg | Energy: ${formatNum(agg.energy||b.energyKg,0)}kg | Food: ${formatNum(agg.food||b.dietKg,0)}kg | Consumption: ${formatNum(agg.consumption||b.consumptionKg,0)}kg\nGenerated by CarbonLens`;
+}
+
+function copyReport() {
+  const ta=document.getElementById('rpt-text');
+  if(ta){ta.select();navigator.clipboard.writeText(ta.value).then(()=>showToast('Copied!','success')).catch(()=>{document.execCommand('copy');showToast('Copied!','success');});}
+}
+
+/* ========================================
+   SECTION 12: SELF-TEST SUITE
+   ======================================== */
+
+function toggleSelfTest() { const p=document.getElementById('self-test-panel'); p.classList.toggle('visible'); if(p.classList.contains('visible'))runSelfTests(); }
+function toggleAlignment() { const n=document.getElementById('alignment-note'); const show=n.style.display==='none'; n.style.display=show?'block':'none'; n.previousElementSibling.setAttribute('aria-expanded',show); }
+
+function runSelfTests() {
+  const r=document.getElementById('self-test-results'); r.textContent='';
+  let passed=0,failed=0;
+  function assert(n,ok){ const pass=!!ok; r.innerHTML+=`<div class="test-result"><span class="${pass?'test-pass':'test-fail'}">${pass?'\u{2705}':'\u{274C}'}</span> ${sanitize(n)}</div>`; if(pass)passed++;else failed++; }
+
+  assert('EF.car = 0.21', EF.car===0.21);
+  assert('EF.bus = 0.089', EF.bus===0.089);
+  assert('EF.beefMeal = 6.61', EF.beefMeal===6.61);
+  assert('EF.veganMeal = 0.39', EF.veganMeal===0.39);
+  assert('EF.walk = 0', EF.walk===0);
+  assert('EF.electricityIndia = 0.82', EF.electricityIndia===0.82);
+  assert('calcTransport(car,30) = 6.3', Math.abs(calcTransport('car',30)-6.3)<0.01);
+  assert('calcTransport(bus,10) = 0.89', Math.abs(calcTransport('bus',10)-0.89)<0.01);
+  assert('calcTransport(walk,5) = 0', calcTransport('walk',5)===0);
+  assert('calcTransport(car,0) = 0', calcTransport('car',0)===0);
+  assert('calcTransport(car,-5) = 0', calcTransport('car',-5)===0);
+  assert('calcEnergy(ac,1) = 1.23', Math.abs(calcEnergy('ac',1)-1.23)<0.01);
+  assert('calcEnergy(electricity,100) = 82', Math.abs(calcEnergy('electricity',100)-82)<0.001);
+  assert('calcFood(beefMeal) = 6.61', calcFood('beefMeal')===6.61);
+  assert('calcConsumption(clothing,1) = 20', calcConsumption('clothingItem',1)===20);
+  assert('calcConsumption(clothing,0) = 20 (min 1)', calcConsumption('clothingItem',0)===20);
+
+  try{localStorage.setItem('_cl_t','ok');assert('localStorage write',true);assert('localStorage read',localStorage.getItem('_cl_t')==='ok');localStorage.removeItem('_cl_t');}catch(e){assert('localStorage write',false);assert('localStorage read',false);}
+
+  assert('loadState is object', typeof loadState()==='object');
+  assert('Default activities is array', Array.isArray(loadState().activities));
+
+  const ta=[{id:'1',timestamp:Date.now(),category:'transport',action:'car',label:'t',co2eKg:10},{id:'2',timestamp:Date.now(),category:'food',action:'beefMeal',label:'t',co2eKg:6.61}];
+  const ag=aggregateActivities(ta);
+  assert('Aggregation transport=10', Math.abs(ag.transport-10)<0.001);
+  assert('Aggregation total=16.61', Math.abs(ag.total-16.61)<0.001);
+  assert('Empty aggregation total=0', aggregateActivities([]).total===0);
+
+  const bl=computeBaseline({transport:{mode:'car',commuteKm:15,flyFrequency:'never'},energy:{electricityBillKwh:200,acUsage:'sometimes',hasGas:false},diet:{type:'regular',beefPerWeek:3},consumption:{clothingFreq:'quarterly',electronicsFreq:'2_years',deliveryFreq:'weekly'}});
+  assert('Baseline total > 0', bl.totalKg>0);
+
+  const recs=generateRecommendations();
+  assert('Recs generated', recs.length>0);
+  if(recs.length>=2){const ep={easy:0,medium:0.1,hard:0.25};assert('Recs ranked',recs[0].savingsKg*(1-ep[recs[0].effort])>=recs[1].savingsKg*(1-ep[recs[1].effort]));}
+
+  assert('Sanitize strips HTML', sanitize('<scr'+'ipt>x</scr'+'ipt>')!=='<scr'+'ipt>x</scr'+'ipt>');
+  assert('formatNum(1234) works', formatNum(1234)==='1,234');
+  assert('formatNum(null)=0', formatNum(null)==='0');
+  assert('Badges defined', BADGE_DEFS.length>=12);
+  assert('Education sections=5', EDUCATION_SECTIONS.length===5);
+  assert('Myths >=5', MYTHS.length>=5);
+
+  r.innerHTML+=`<div style="margin-top:1rem;padding:0.75rem;border-radius:8px;font-weight:700;text-align:center;background:${failed===0?'var(--accent-green-pale)':'#FFE5E0'};color:${failed===0?'var(--accent-green)':'var(--accent-warm)'}">${passed} passed, ${failed} failed of ${passed+failed}</div>`;
+  return {passed,failed};
+}
+
+/* ========================================
+   SECTION 13: INIT
+   ======================================== */
+
+document.addEventListener('keydown', e => {
+  if(e.ctrlKey&&e.shiftKey&&e.key==='T'){e.preventDefault();toggleSelfTest();}
+  if(e.key==='Escape'){closeCustomModal();const p=document.getElementById('self-test-panel');if(p.classList.contains('visible'))p.classList.remove('visible');}
+});
+
+function processRecurringHabits() {
+  const today=new Date().toDateString();
+  APP.recurringHabits.forEach(h=>{
+    if(h.enabled===false)return;
+    const lr=h.lastRunDate?new Date(h.lastRunDate).toDateString():null;
+    if(lr===today)return;
+    let run=false;
+    if(!lr)run=true;
+    else if(h.recurrenceInterval==='daily')run=true;
+    else if(h.recurrenceInterval==='weekly')run=Math.floor((Date.now()-new Date(h.lastRunDate).getTime())/86400000)>=7;
+    else if(h.recurrenceInterval==='monthly'){const ld=new Date(h.lastRunDate);run=ld.getMonth()!==new Date().getMonth();}
+    if(run){APP.activities.push({id:uid(),timestamp:Date.now(),category:h.category,action:h.action,label:h.label+' (recurring)',co2eKg:h.co2eKg,quantity:h.quantity,unit:h.unit});h.lastRunDate=Date.now();updateStreak();}
+  });
+  saveState(APP);
+}
+
+function init() {
+  processRecurringHabits(); updateStreak(); checkBadges();
+  if(!APP.profile) renderDashboard();
+  else navigateTo(APP.currentSection);
+}
+
+init();
+
+let resizeTimer;
+window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{const s=APP.currentSection;if(s==='dashboard')renderDashboard();else if(s==='insights')renderInsights();else if(s==='reports')renderReports();},250);});
+</script>
+</body>
+</html>
